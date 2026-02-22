@@ -15,7 +15,6 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--paper);min-height:100vh}
 
-/* ── HEADER ── */
 header{background:var(--paper);color:var(--ink);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:200}
 header h1{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:900;letter-spacing:-.02em}
 header h1 span{color:var(--gold)}
@@ -23,11 +22,9 @@ header h1 span{color:var(--gold)}
 .tab{padding:6px 16px;border:2px solid var(--ink);background:transparent;color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:600;font-size:.78rem;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
 .tab.on,.tab:hover{background:var(--ink);color:var(--paper)}
 
-/* ── LAYOUT ── */
 main{max-width:860px;margin:0 auto;padding:24px 14px}
 .panel{display:none}.panel.on{display:block}
 
-/* ── CARDS ── */
 .card{background:var(--cream);color:var(--ink);border:2px solid var(--bdr);border-radius:3px;padding:20px;margin-bottom:16px}
 .card h2{font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid #c0b898}
 label{display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;color:#5a4a38}
@@ -35,7 +32,6 @@ input[type=text],select,textarea{width:100%;padding:8px 11px;border:2px solid va
 input:focus,select:focus,textarea:focus{border-color:var(--gold)}
 textarea{resize:vertical;min-height:52px;font-size:.8rem}
 
-/* ── BUTTONS ── */
 .btn{padding:8px 20px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;transition:all .15s;border-radius:2px}
 .btn-ink{background:var(--ink);color:var(--paper)}.btn-ink:hover{background:#2e2e50}
 .btn-gold{background:var(--gold);color:var(--ink)}.btn-gold:hover{background:var(--gold-l)}
@@ -43,7 +39,6 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
 .btn-red{background:#a0201a;color:#fff}
 .btn-sm{padding:4px 10px;font-size:.72rem}
 
-/* ── WORD ROWS ── */
 .word-list{margin-top:8px}
 .word-row{display:grid;grid-template-columns:130px 1fr 90px 28px;gap:7px;align-items:start;margin-bottom:7px;background:var(--paper);padding:8px;border:1px solid #c8bfaa;border-radius:2px}
 .img-col{display:flex;flex-direction:column;gap:4px}
@@ -53,101 +48,45 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
 .bg-zone{border:2px dashed #c0b898;padding:10px;text-align:center;cursor:pointer;border-radius:2px;font-size:.78rem;color:#7a6a50;transition:border-color .2s}
 .bg-zone:hover,.bg-zone.has{border-color:var(--gold);border-style:solid}
 
-/* ════════════════════════════════
-   A4 SHEET — 740px screen width
-════════════════════════════════ */
-.sheet{
-  width:740px;
-  background:var(--paper);
-  color:var(--ink);
-  margin:20px auto;
-  padding:28px 32px 32px;
-  border:2px solid var(--bdr);
-  box-shadow:0 6px 28px rgba(0,0,0,.38);
-  position:relative;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-}
+/* ── TOKEN GITHUB ── */
+.token-notice{background:#1e2a1e;border:1px solid var(--sage);border-radius:3px;padding:12px 16px;font-size:.8rem;margin-bottom:14px;color:#c8e6c8;line-height:1.6}
+.token-notice a{color:var(--gold-l)}
+.token-notice input{margin-top:6px;background:#0d1a0d;border-color:var(--sage);color:#c8e6c8}
 
-/* ── Titre : toujours visible, centré, position relative dans le flux ── */
-.sheet-title-block{
-  text-align:center;
-  padding:0 96px 14px;  /* réserve l'espace du QR à droite */
-  position:relative;
-  z-index:2;
-  flex-shrink:0;
-}
+/* ── SHEET A4 ── */
+.sheet{width:740px;background:var(--paper);color:var(--ink);margin:20px auto;padding:28px 32px 32px;border:2px solid var(--bdr);box-shadow:0 6px 28px rgba(0,0,0,.38);position:relative;overflow:hidden;display:flex;flex-direction:column}
+
+.sheet-title-block{text-align:center;padding:0 96px 14px;position:relative;z-index:2;flex-shrink:0}
 .sheet-title{font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:900;letter-spacing:-.02em;line-height:1.05;color:var(--ink)}
 .sheet-sub{font-size:.62rem;color:#888;letter-spacing:.12em;text-transform:uppercase;margin-top:4px}
 
-/* ── QR : absolute top-right, z-index élevé ── */
 .qr-corner{position:absolute;top:28px;right:32px;z-index:10;display:flex;flex-direction:column;align-items:center;gap:3px}
 .qr-frame{width:82px;height:82px;border:2.5px solid var(--bdr);padding:4px;background:#fff;box-shadow:2px 2px 0 var(--bdr)}
 .qr-frame canvas,.qr-frame img{width:100%!important;height:100%!important;display:block}
 .qr-lbl{font-size:.5rem;text-transform:uppercase;letter-spacing:.08em;color:#888;text-align:center;max-width:84px}
 .qr-st{font-size:.52rem;text-align:center;max-width:84px;margin-top:1px}
-.qr-ok{color:#2e7d32}.qr-err{color:var(--rust)}
+.qr-ok{color:#2e7d32}.qr-err{color:var(--rust)}.qr-wait{color:#888}
 
-/* ── Grille ── */
-.grid-zone{
-  display:flex;
-  justify-content:center;
-  margin-bottom:14px;
-  flex-shrink:0;
-  position:relative;
-  z-index:2;
-}
+.grid-zone{display:flex;justify-content:center;margin-bottom:14px;flex-shrink:0;position:relative;z-index:2}
 .xw{border-collapse:collapse;border:2.5px solid var(--bdr);box-shadow:2px 2px 0 rgba(26,26,46,.12)}
 .xw td{position:relative;padding:0}
-/* Case vide (sans lettre) : blanc cassé, bordure très légère */
 .xb{background:#f2ede4;border:1px solid #e0d8cc}
-/* Case active (avec lettre) */
 .xwc{background:#fff;border:1.5px solid #3a3a5a}
 .xn{position:absolute;top:1px;left:2px;font-family:'DM Mono',monospace;font-size:6px;font-weight:700;line-height:1;color:var(--ink);pointer-events:none}
 .xl{display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-family:'DM Mono',monospace;font-size:.75rem;font-weight:700;text-transform:uppercase;color:var(--ink)}
 .xi{width:100%;height:100%;border:none;outline:none;background:transparent;text-align:center;font-family:'DM Mono',monospace;font-size:.75rem;font-weight:700;text-transform:uppercase;color:var(--rust);padding:0;cursor:text}
 
-/* ── Zone indices + image de fond ── */
-/* Le conteneur des indices est POSITIONNÉ en relatif pour que
-   l'image de fond ne soit que derrière eux */
-.clues-wrapper{
-  position:relative;
-  flex:1;
-}
-/* Image de fond : uniquement derrière les indices */
-.clues-bg{
-  position:absolute;
-  inset:0;
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
-  pointer-events:none;
-  z-index:0;
-  border-radius:2px;
-  transition:opacity .3s;
-}
-.clues-grid{
-  position:relative;
-  z-index:1;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px 18px;
-}
+.clues-wrapper{position:relative;flex:1}
+.clues-bg{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;z-index:0;border-radius:2px;transition:opacity .3s}
+.clues-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
 .clues-col h3{font-family:'Playfair Display',serif;font-size:.73rem;font-weight:900;text-transform:uppercase;letter-spacing:.07em;border-bottom:1.5px solid var(--ink);padding-bottom:2px;margin-bottom:6px}
 .clue{display:flex;gap:6px;align-items:flex-start;margin-bottom:4px;font-size:.67rem}
 .cn{font-family:'DM Mono',monospace;font-weight:700;color:var(--rust);min-width:16px;flex-shrink:0;padding-top:1px}
 .cbody{flex:1;line-height:1.3;color:#2a2020}
 .cimg{width:36px;height:36px;object-fit:cover;flex-shrink:0;border:3px solid #fff;outline:1px solid #c0b49a;box-shadow:0 1px 5px rgba(0,0,0,.14)}
 
-/* ── Action bar ── */
 .action-bar{width:740px;margin:0 auto 28px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 
-/* ── Notifications QR ── */
-.qr-info{background:var(--cream);color:var(--ink);border:1.5px solid var(--gold);border-radius:3px;padding:12px 16px;font-size:.8rem;margin:8px auto;width:740px;display:none}
-.qr-info a{color:var(--rust);font-weight:700}
-
-/* loading / toast */
 .loading{text-align:center;padding:44px;font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold);animation:pulse 1.2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:var(--gold);padding:10px 20px;border:2px solid var(--gold);font-size:.85rem;border-radius:2px;z-index:9999;animation:tin .25s ease;display:none}
@@ -155,12 +94,12 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
 
 @media print{
   body{background:#fff!important}
-  header,.card,.action-bar,.tabs,.qr-info{display:none!important}
+  header,.card,.action-bar,.tabs{display:none!important}
   .sheet{margin:0!important;border:none!important;box-shadow:none!important;width:210mm!important;padding:12mm 14mm!important}
   @page{size:A4 portrait;margin:0}
 }
 @media(max-width:780px){
-  .sheet,.action-bar,.qr-info{width:100%}
+  .sheet,.action-bar{width:100%}
   .word-row{grid-template-columns:1fr 1fr}
   .clues-grid{grid-template-columns:1fr}
   .sheet-title-block{padding:0 0 14px}
@@ -183,6 +122,15 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
 <div id="p-auto" class="panel on">
   <div class="card">
     <h2>Génération par mots-clés</h2>
+
+    <!-- Token GitHub -->
+    <div class="token-notice">
+      🔑 <strong>Clé GitHub requise pour le QR code</strong> — 
+      <a href="https://github.com/settings/tokens/new?description=MotsCroises&scopes=gist" target="_blank">Cliquez ici pour en créer une</a> 
+      (cochez uniquement <strong>«&nbsp;gist&nbsp;»</strong>, puis cliquez «&nbsp;Generate token&nbsp;»). Copiez-collez le token ci-dessous. Il n'est stocké que dans votre navigateur.
+      <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="saveToken(this.value)">
+    </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
       <div><label>Titre</label><input type="text" id="a-title" value="Mots Croisés"></div>
       <div><label>Taille</label>
@@ -209,7 +157,6 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
     </div>
     <button class="btn btn-gold" onclick="genAuto()">✦ Générer la grille</button>
   </div>
-  <div id="qri-auto" class="qr-info"></div>
   <div id="o-auto"></div>
 </div>
 
@@ -217,6 +164,14 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
 <div id="p-manual" class="panel">
   <div class="card">
     <h2>Grille personnalisée</h2>
+
+    <div class="token-notice">
+      🔑 <strong>Clé GitHub requise pour le QR code</strong> — 
+      <a href="https://github.com/settings/tokens/new?description=MotsCroises&scopes=gist" target="_blank">Cliquez ici pour en créer une</a>
+      (cochez uniquement <strong>«&nbsp;gist&nbsp;»</strong>). Le token est partagé entre les deux modes.
+      <input type="password" id="gh-token2" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="saveToken(this.value)">
+    </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
       <div><label>Titre</label><input type="text" id="m-title" value="Ma Grille"></div>
       <div><label>Taille</label>
@@ -245,7 +200,6 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
     </div>
     <button class="btn btn-gold" onclick="genManual()">✦ Générer la grille</button>
   </div>
-  <div id="qri-manual" class="qr-info"></div>
   <div id="o-manual"></div>
 </div>
 
@@ -260,9 +214,25 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
 <div class="toast" id="toast"></div>
 <script>
 /* ══════════════════════════════════════════════
-   CONFIGURATION — URL GitHub Pages
+   CONFIG
 ══════════════════════════════════════════════ */
-const GITHUB_URL = 'https://roche-stephane.github.io/Mots-croises-Maintenance-Automobile/';
+const GITHUB_PAGES = 'https://roche-stephane.github.io/Mots-croises-Maintenance-Automobile/';
+
+/* ══════════════════════════════════════════════
+   TOKEN — stocké dans localStorage
+══════════════════════════════════════════════ */
+function saveToken(v){
+  if(v.trim()) localStorage.setItem('gh_token', v.trim());
+  // Sync les deux champs
+  document.getElementById('gh-token').value = v;
+  document.getElementById('gh-token2').value = v;
+}
+function getToken(){ return localStorage.getItem('gh_token')||''; }
+// Pré-remplir au chargement
+window.addEventListener('DOMContentLoaded', ()=>{
+  const t = getToken();
+  if(t){ document.getElementById('gh-token').value=t; document.getElementById('gh-token2').value=t; }
+});
 
 /* ══════════════════════════════════════════════
    STATE
@@ -273,7 +243,7 @@ let G = null;
 /* ══════════════════════════════════════════════
    TABS
 ══════════════════════════════════════════════ */
-function go(id, btn){
+function go(id,btn){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
   document.getElementById('p-'+id).classList.add('on');
@@ -281,43 +251,42 @@ function go(id, btn){
 }
 
 /* ══════════════════════════════════════════════
-   BACKGROUND IMAGE
+   BG IMAGE
 ══════════════════════════════════════════════ */
-function loadBg(e, p){
-  const f = e.target.files[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = ev => {
-    bgData[p] = ev.target.result;
-    const z = document.getElementById(p+'-bgz');
-    z.textContent = '✓ ' + f.name; z.classList.add('has');
-    // Mise à jour en direct si la feuille est déjà affichée
-    const mode = p==='a'?'auto':'manual';
-    const bgEl = document.getElementById('clues-bg-'+mode);
-    if(bgEl) bgEl.style.backgroundImage = `url('${bgData[p]}')`;
+function loadBg(e,p){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    bgData[p]=ev.target.result;
+    document.getElementById(p+'-bgz').textContent='✓ '+f.name;
+    document.getElementById(p+'-bgz').classList.add('has');
+    const mode=p==='a'?'auto':'manual';
+    const bgEl=document.getElementById('clues-bg-'+mode);
+    if(bgEl) bgEl.style.backgroundImage=`url('${bgData[p]}')`;
   };
   r.readAsDataURL(f);
 }
 function liveOp(mode){
-  const p = mode==='auto'?'a':'m';
-  const v = document.getElementById(p+'-op').value / 100;
-  const bgEl = document.getElementById('clues-bg-'+mode);
-  if(bgEl) bgEl.style.opacity = v;
+  const p=mode==='auto'?'a':'m';
+  const v=document.getElementById(p+'-op').value/100;
+  const bgEl=document.getElementById('clues-bg-'+mode);
+  if(bgEl) bgEl.style.opacity=v;
 }
 
 /* ══════════════════════════════════════════════
-   WORD ROWS (mode manuel)
+   WORD ROWS
 ══════════════════════════════════════════════ */
-let rc = 0;
-function addRow(w='', c='', img=''){
-  const id = ++rc;
-  const d = document.createElement('div');
-  d.className = 'word-row'; d.id = 'r'+id;
-  d.innerHTML = `
+let rc=0;
+function addRow(w='',c='',img=''){
+  const id=++rc;
+  const d=document.createElement('div');
+  d.className='word-row'; d.id='r'+id;
+  d.innerHTML=`
     <div><label>Mot</label>
       <input type="text" id="w${id}" value="${w}" placeholder="MOT" style="text-transform:uppercase">
     </div>
     <div><label>Indice</label>
-      <textarea id="c${id}" placeholder="Définition ou description…">${c}</textarea>
+      <textarea id="c${id}" placeholder="Définition…">${c}</textarea>
     </div>
     <div class="img-col"><label>Image</label>
       <img class="preview-img" id="pi${id}" src="${img}" ${img?'style="display:block"':''}>
@@ -326,21 +295,18 @@ function addRow(w='', c='', img=''){
     </div>
     <button class="del-btn" onclick="document.getElementById('r${id}').remove()">✕</button>`;
   document.getElementById('m-words').appendChild(d);
-  if(img){ document.getElementById('pi'+id).dataset.b = img; }
+  if(img) document.getElementById('pi'+id).dataset.b=img;
 }
-function pickImg(e, id){
-  const f = e.target.files[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = ev => {
-    const im = document.getElementById('pi'+id);
-    im.src = ev.target.result; im.style.display = 'block'; im.dataset.b = ev.target.result;
-  };
+function pickImg(e,id){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{ const im=document.getElementById('pi'+id); im.src=ev.target.result; im.style.display='block'; im.dataset.b=ev.target.result; };
   r.readAsDataURL(f);
 }
 function importCSV(e){
-  const f = e.target.files[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = ev => { ev.target.result.split('\n').forEach(l=>{ const p=l.split(','); if(p[0]) addRow(p[0].trim(),p[1]||''); }); toast('CSV importé ✓'); };
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{ ev.target.result.split('\n').forEach(l=>{ const p=l.split(','); if(p[0]) addRow(p[0].trim(),p[1]||''); }); toast('CSV importé ✓'); };
   r.readAsText(f);
 }
 for(let i=0;i<5;i++) addRow();
@@ -359,11 +325,10 @@ function N(w){
 /* ══════════════════════════════════════════════
    MOTEUR MOTS CROISÉS
 ══════════════════════════════════════════════ */
-function build(raws, size){
-  const wl = [...new Set(raws.map(N).filter(w=>w.length>=2&&w.length<size))].sort((a,b)=>b.length-a.length);
-  const grid = Array.from({length:size}, ()=>new Array(size).fill(null));
-  const placed = [];
-
+function build(raws,size){
+  const wl=[...new Set(raws.map(N).filter(w=>w.length>=2&&w.length<size))].sort((a,b)=>b.length-a.length);
+  const grid=Array.from({length:size},()=>new Array(size).fill(null));
+  const placed=[];
   function ok(word,row,col,dir){
     const len=word.length;
     if(dir==='H'){
@@ -373,7 +338,7 @@ function build(raws, size){
       for(let i=0;i<len;i++){
         const g=grid[row][col+i];
         if(g&&g!==word[i]) return false;
-        if(!g){ if(row>0&&grid[row-1][col+i]) return false; if(row<size-1&&grid[row+1][col+i]) return false; }
+        if(!g){if(row>0&&grid[row-1][col+i]) return false; if(row<size-1&&grid[row+1][col+i]) return false;}
       }
     } else {
       if(row+len>size) return false;
@@ -382,7 +347,7 @@ function build(raws, size){
       for(let i=0;i<len;i++){
         const g=grid[row+i][col];
         if(g&&g!==word[i]) return false;
-        if(!g){ if(col>0&&grid[row+i][col-1]) return false; if(col<size-1&&grid[row+i][col+1]) return false; }
+        if(!g){if(col>0&&grid[row+i][col-1]) return false; if(col<size-1&&grid[row+i][col+1]) return false;}
       }
     }
     return true;
@@ -396,172 +361,159 @@ function build(raws, size){
       for(let pi=0;pi<p.word.length;pi++)
         for(let wi=0;wi<word.length;wi++)
           if(p.word[pi]===word[wi]){
-            if(p.dir==='H'){ const r=p.row-wi,c=p.col+pi; if(r>=0&&ok(word,r,c,'V')){ place(word,r,c,'V'); return true; } }
-            else            { const r=p.row+pi,c=p.col-wi; if(c>=0&&ok(word,r,c,'H')){ place(word,r,c,'H'); return true; } }
+            if(p.dir==='H'){const r=p.row-wi,c=p.col+pi; if(r>=0&&ok(word,r,c,'V')){place(word,r,c,'V');return true;}}
+            else{const r=p.row+pi,c=p.col-wi; if(c>=0&&ok(word,r,c,'H')){place(word,r,c,'H');return true;}}
           }
     return false;
   }
-  if(wl.length) place(wl[0], Math.floor(size/2), Math.floor((size-wl[0].length)/2), 'H');
+  if(wl.length) place(wl[0],Math.floor(size/2),Math.floor((size-wl[0].length)/2),'H');
   for(let i=1;i<wl.length;i++){
     if(!intersect(wl[i])){
       let done=false;
       for(let t=0;t<300&&!done;t++){
-        const dir=t%2?'V':'H', r=Math.floor(Math.random()*size), c=Math.floor(Math.random()*size);
-        if(ok(wl[i],r,c,dir)){ place(wl[i],r,c,dir); done=true; }
+        const dir=t%2?'V':'H',r=Math.floor(Math.random()*size),c=Math.floor(Math.random()*size);
+        if(ok(wl[i],r,c,dir)){place(wl[i],r,c,dir);done=true;}
       }
     }
   }
-  return {grid, placed, size};
+  return{grid,placed,size};
 }
-
-function numCells(grid, placed, size){
-  const starts = new Set(placed.map(p=>p.row+','+p.col));
-  const nums={}; let n=1;
+function numCells(grid,placed,size){
+  const starts=new Set(placed.map(p=>p.row+','+p.col));
+  const nums={};let n=1;
   for(let r=0;r<size;r++) for(let c=0;c<size;c++) if(grid[r][c]&&starts.has(r+','+c)) nums[r+','+c]=n++;
   placed.forEach(p=>p.num=nums[p.row+','+p.col]);
   return nums;
 }
-
-function cellPx(size){ return Math.floor(Math.min(640,440)/size); }
-
-/* ══════════════════════════════════════════════
-   QR CODE — STRATÉGIE GITHUB PAGES
-   
-   1. On encode la grille en JSON compressé (base64)
-   2. On stocke ce JSON dans localStorage du navigateur
-      sous une clé unique (timestamp)
-   3. Le QR pointe vers la page GitHub Pages avec
-      cette clé en paramètre : ?k=XXXXX
-   4. Quand GitHub Pages charge avec ?k=XXXXX,
-      il lit localStorage et affiche la grille.
-   
-   MAIS : localStorage ne persiste pas entre
-   appareils différents. Donc on utilise une
-   approche différente :
-   
-   On encode TOUT dans l'URL (paramètre #data=)
-   en utilisant une compression LZ simple pour
-   garder l'URL sous 2000 chars (limite QR).
-   Si trop long → on tronque les indices longs.
-══════════════════════════════════════════════ */
-
-function compressGrid(grid, placed, clues, title, size){
-  // Format ultra-compact :
-  // grille : seulement les lettres ligne par ligne, séparées par |
-  // mots placés : word,r,c,dir(0=H,1=V) séparés par ;
-  // indices : mot:indice séparés par ~ (indices tronqués à 60 chars)
-  const gStr = grid.map(row=>row.map(c=>c||'.').join('')).join('|');
-  const pStr = placed.map(p=>`${p.word},${p.row},${p.col},${p.dir==='H'?0:1},${p.num||0}`).join(';');
-  const cStr = Object.entries(clues).map(([k,v])=>`${k}:${v.substring(0,60)}`).join('~');
-  const obj = {g:gStr, p:pStr, c:cStr, t:title, s:size};
-  return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
-}
-
-function buildQRUrl(encoded){
-  return GITHUB_URL + '?play=' + encoded;
-}
-
-function makeQR(grid, placed, clues, title, size, qrDivId, statusId, infoId){
-  const statusEl = document.getElementById(statusId);
-  const qrEl     = document.getElementById(qrDivId);
-  const infoEl   = document.getElementById(infoId);
-  if(!qrEl) return;
-
-  const encoded = compressGrid(grid, placed, clues, title, size);
-  const playUrl = buildQRUrl(encoded);
-  const urlLen  = playUrl.length;
-
-  // Render QR
-  qrEl.innerHTML = '';
-  const corrLevel = urlLen < 800 ? QRCode.CorrectLevel.M : QRCode.CorrectLevel.L;
-  try {
-    new QRCode(qrEl, {
-      text: playUrl,
-      width: 74, height: 74,
-      colorDark: '#1a1a2e', colorLight: '#ffffff',
-      correctLevel: corrLevel
-    });
-    if(statusEl){ statusEl.textContent='✓ QR actif'; statusEl.className='qr-st qr-ok'; }
-
-    if(infoEl){
-      infoEl.style.display = 'block';
-      infoEl.innerHTML = `✓ <strong>QR code généré.</strong> Pour qu'il soit scannable depuis n'importe quel iPhone ou Android dans le monde, 
-        déposez ce fichier sur votre GitHub Pages : <a href="${GITHUB_URL}" target="_blank">${GITHUB_URL}</a><br>
-        <em style="font-size:.72rem;color:#888">Taille URL : ${urlLen} caractères — ${urlLen<1500?'✓ compatible tous les lecteurs QR':'⚠ URL longue, utilisez une grille plus petite ou des indices plus courts'}</em>`;
-    }
-  } catch(e) {
-    if(statusEl){ statusEl.textContent='Erreur QR'; statusEl.className='qr-st qr-err'; }
-    console.error('QR error', e);
-  }
-}
+function cellPx(size){return Math.floor(Math.min(640,440)/size);}
 
 /* ══════════════════════════════════════════════
-   RENDU DE LA FEUILLE A4
+   QR CODE VIA GITHUB GIST
+   
+   1. On publie la grille dans un Gist GitHub (anonyme
+      si pas de token, ou avec token pour persister)
+   2. Le Gist retourne un ID court (ex: a1b2c3d4e5)
+   3. L'URL QR = GITHUB_PAGES + ?g=<gistId>  (~60 chars)
+   4. Quand on scanne, la page lit le Gist et charge la grille
 ══════════════════════════════════════════════ */
-function renderSheet({grid,placed,size}, title, clues, imgs, showSol, mode, bgSrc, opVal){
-  const cp = cellPx(size);
-  const sp = [...placed].sort((a,b)=>a.row!==b.row?a.row-b.row:a.col-b.col);
-  const nums = numCells(grid, sp, size);
-  const across = sp.filter(p=>p.dir==='H').sort((a,b)=>a.num-b.num);
-  const down   = sp.filter(p=>p.dir==='V').sort((a,b)=>a.num-b.num);
+async function publishGist(payload){
+  const token = getToken();
+  const headers = {
+    'Accept': 'application/vnd.github+json',
+    'Content-Type': 'application/json',
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
+  if(token) headers['Authorization'] = 'Bearer ' + token;
 
-  /* Table grille */
-  let tbl = `<table class="xw">`;
-  for(let r=0;r<size;r++){
-    tbl += `<tr>`;
-    for(let c=0;c<size;c++){
-      const ch = grid[r][c];
-      const sz = `width:${cp}px;height:${cp}px`;
-      if(!ch){
-        tbl += `<td class="xb" style="${sz}"></td>`;
-      } else {
-        const num = nums[r+','+c]||'';
-        const inner = showSol ? `<div class="xl">${ch}</div>` : '';
-        tbl += `<td class="xwc" style="${sz}"><span class="xn">${num}</span>${inner}</td>`;
+  const body = JSON.stringify({
+    description: 'Mots Croisés — grille interactive',
+    public: true,
+    files: {
+      'grid.json': {
+        content: JSON.stringify(payload)
       }
     }
-    tbl += `</tr>`;
-  }
-  tbl += `</table>`;
+  });
 
-  /* Indices */
+  const res = await fetch('https://api.github.com/gists', {
+    method: 'POST',
+    headers,
+    body
+  });
+  if(!res.ok){
+    const err = await res.json().catch(()=>({message:res.status}));
+    throw new Error(err.message||res.status);
+  }
+  const data = await res.json();
+  return data.id; // ex: "a1b2c3d4e5f6..."
+}
+
+async function makeQR(grid,placed,clues,title,size,qrDivId,statusId){
+  const statusEl = document.getElementById(statusId);
+  const qrEl     = document.getElementById(qrDivId);
+  if(!qrEl) return;
+
+  if(statusEl){ statusEl.textContent='⏳ Publication…'; statusEl.className='qr-st qr-wait'; }
+
+  // Payload minimaliste (sans images base64 pour rester léger)
+  const payload = {
+    g: grid.map(row=>row.map(c=>c||'').join('')).join('|'),
+    p: placed.map(p=>`${p.word},${p.row},${p.col},${p.dir==='H'?0:1},${p.num||0}`).join(';'),
+    c: Object.entries(clues).map(([k,v])=>`${k}:${v.substring(0,80)}`).join('~'),
+    t: title,
+    s: size
+  };
+
+  try {
+    const gistId = await publishGist(payload);
+    const playUrl = GITHUB_PAGES + '?g=' + gistId;
+
+    qrEl.innerHTML='';
+    new QRCode(qrEl,{
+      text: playUrl,
+      width:74, height:74,
+      colorDark:'#1a1a2e', colorLight:'#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+    if(statusEl){ statusEl.textContent='✓ QR prêt'; statusEl.className='qr-st qr-ok'; }
+    toast('✓ QR code actif — scannable depuis n\'importe quel iPhone !');
+  } catch(err){
+    console.warn('Gist error:', err);
+    if(statusEl){ statusEl.textContent='⚠ Token requis'; statusEl.className='qr-st qr-err'; }
+    toast('⚠ Ajoutez votre token GitHub pour activer le QR code');
+  }
+}
+
+/* ══════════════════════════════════════════════
+   RENDU FEUILLE A4
+══════════════════════════════════════════════ */
+function renderSheet({grid,placed,size},title,clues,imgs,showSol,mode,bgSrc,opVal){
+  const cp=cellPx(size);
+  const sp=[...placed].sort((a,b)=>a.row!==b.row?a.row-b.row:a.col-b.col);
+  const nums=numCells(grid,sp,size);
+  const across=sp.filter(p=>p.dir==='H').sort((a,b)=>a.num-b.num);
+  const down=sp.filter(p=>p.dir==='V').sort((a,b)=>a.num-b.num);
+
+  let tbl=`<table class="xw">`;
+  for(let r=0;r<size;r++){
+    tbl+=`<tr>`;
+    for(let c=0;c<size;c++){
+      const ch=grid[r][c];
+      const sz=`width:${cp}px;height:${cp}px`;
+      if(!ch){ tbl+=`<td class="xb" style="${sz}"></td>`; }
+      else {
+        const num=nums[r+','+c]||'';
+        const inner=showSol?`<div class="xl">${ch}</div>`:'';
+        tbl+=`<td class="xwc" style="${sz}"><span class="xn">${num}</span>${inner}</td>`;
+      }
+    }
+    tbl+=`</tr>`;
+  }
+  tbl+=`</table>`;
+
   function mkClues(list){
     return list.map(p=>{
-      const txt = clues[p.word]||p.word;
-      const img = imgs&&imgs[p.word];
-      return `<div class="clue">
-        <span class="cn">${p.num}.</span>
-        ${img?`<img class="cimg" src="${img}" alt="">`:''}
-        <span class="cbody">${txt} <em style="color:#bbb;font-size:.62em">(${p.word.length})</em></span>
-      </div>`;
+      const txt=clues[p.word]||p.word, img=imgs&&imgs[p.word];
+      return `<div class="clue"><span class="cn">${p.num}.</span>${img?`<img class="cimg" src="${img}" alt="">`:''}
+        <span class="cbody">${txt} <em style="color:#bbb;font-size:.62em">(${p.word.length})</em></span></div>`;
     }).join('');
   }
 
-  const bgStyle = bgSrc ? `background-image:url('${bgSrc}');opacity:${opVal/100}` : `opacity:0`;
-  const shId    = `sh-${mode}`;
-  const qrId    = `qr-${mode}`;
-  const stId    = `qs-${mode}`;
-  const infoId  = `qri-${mode}`;
+  const bgStyle=bgSrc?`background-image:url('${bgSrc}');opacity:${opVal/100}`:`opacity:0`;
+  const shId=`sh-${mode}`, qrId=`qr-${mode}`, stId=`qs-${mode}`;
 
-  document.getElementById('o-'+mode).innerHTML = `
+  document.getElementById('o-'+mode).innerHTML=`
   <div class="sheet" id="${shId}">
-    <!-- QR en haut à droite, AU-DESSUS du titre -->
     <div class="qr-corner">
       <div class="qr-frame" id="${qrId}"></div>
       <div class="qr-lbl">Scanner pour jouer</div>
-      <div class="qr-st" id="${stId}">⏳ Génération…</div>
+      <div class="qr-st qr-wait" id="${stId}">⏳ Génération…</div>
     </div>
-
-    <!-- Titre centré, toujours dans le flux -->
     <div class="sheet-title-block">
       <div class="sheet-title">${title}</div>
       <div class="sheet-sub">Mots Croisés • ${sp.length} mots</div>
     </div>
-
-    <!-- Grille centrée -->
     <div class="grid-zone">${tbl}</div>
-
-    <!-- Zone indices avec image de fond UNIQUEMENT derrière eux -->
     <div class="clues-wrapper">
       <div class="clues-bg" id="clues-bg-${mode}" style="${bgStyle}"></div>
       <div class="clues-grid">
@@ -576,109 +528,103 @@ function renderSheet({grid,placed,size}, title, clues, imgs, showSol, mode, bgSr
     <button class="btn btn-rust" onclick="doPlay()">▶ Jouer en ligne</button>
   </div>`;
 
-  G = {grid, placed:sp, size, title, clues, imgs:imgs||{}, bgSrc, opVal};
-
-  // Générer le QR
-  makeQR(grid, sp, clues, title, size, qrId, stId, infoId);
+  G={grid,placed:sp,size,title,clues,imgs:imgs||{},bgSrc,opVal};
+  makeQR(grid,sp,clues,title,size,qrId,stId);
 }
 
 /* ══════════════════════════════════════════════
    GÉNÉRATEURS
 ══════════════════════════════════════════════ */
 function genAuto(){
-  const title  = document.getElementById('a-title').value.trim()||'Mots Croisés';
-  const size   = parseInt(document.getElementById('a-size').value);
-  const showSol= document.getElementById('a-sol').value==='1';
-  const raw    = document.getElementById('a-words').value;
-  const opVal  = parseInt(document.getElementById('a-op').value);
-  if(!raw.trim()){ toast('Saisissez des mots-clés !'); return; }
-  const words  = raw.split(',').map(w=>w.trim()).filter(Boolean);
-  const clues  = {}; words.forEach(w=>{ clues[N(w)]=w; });
-  const o = document.getElementById('o-auto');
-  o.innerHTML = '<div class="loading">⌛ Génération…</div>';
+  const title=document.getElementById('a-title').value.trim()||'Mots Croisés';
+  const size=parseInt(document.getElementById('a-size').value);
+  const showSol=document.getElementById('a-sol').value==='1';
+  const raw=document.getElementById('a-words').value;
+  const opVal=parseInt(document.getElementById('a-op').value);
+  if(!raw.trim()){toast('Saisissez des mots-clés !');return;}
+  const words=raw.split(',').map(w=>w.trim()).filter(Boolean);
+  const clues={};words.forEach(w=>{clues[N(w)]=w;});
+  const o=document.getElementById('o-auto');
+  o.innerHTML='<div class="loading">⌛ Génération…</div>';
   setTimeout(()=>{
-    const r = build(words, size);
-    if(r.placed.length<2){ o.innerHTML='<div class="card" style="color:var(--rust)">Pas assez de mots placés. Ajoutez plus de mots.</div>'; return; }
+    const r=build(words,size);
+    if(r.placed.length<2){o.innerHTML='<div class="card" style="color:var(--rust)">Pas assez de mots placés. Ajoutez plus de mots.</div>';return;}
     o.innerHTML='';
-    renderSheet(r, title, clues, {}, showSol, 'auto', bgData['a'], opVal);
-  }, 60);
+    renderSheet(r,title,clues,{},showSol,'auto',bgData['a'],opVal);
+  },60);
 }
 
 function genManual(){
-  const title  = document.getElementById('m-title').value.trim()||'Ma Grille';
-  const size   = parseInt(document.getElementById('m-size').value);
-  const showSol= document.getElementById('m-sol').value==='1';
-  const opVal  = parseInt(document.getElementById('m-op').value);
-  const words=[], clues={}, imgs={};
+  const title=document.getElementById('m-title').value.trim()||'Ma Grille';
+  const size=parseInt(document.getElementById('m-size').value);
+  const showSol=document.getElementById('m-sol').value==='1';
+  const opVal=parseInt(document.getElementById('m-op').value);
+  const words=[],clues={},imgs={};
   document.querySelectorAll('#m-words .word-row').forEach(row=>{
-    const m = row.id.match(/r(\d+)/); if(!m) return;
-    const id = m[1];
-    const wEl=document.getElementById('w'+id), cEl=document.getElementById('c'+id), iEl=document.getElementById('pi'+id);
+    const m=row.id.match(/r(\d+)/); if(!m) return;
+    const id=m[1];
+    const wEl=document.getElementById('w'+id),cEl=document.getElementById('c'+id),iEl=document.getElementById('pi'+id);
     if(!wEl||!wEl.value.trim()) return;
-    const w = N(wEl.value.trim()); if(w.length<2) return;
+    const w=N(wEl.value.trim()); if(w.length<2) return;
     words.push(w);
-    clues[w] = cEl ? cEl.value.trim()||wEl.value.trim() : wEl.value.trim();
-    const src = iEl&&(iEl.dataset.b||(iEl.src.startsWith('data:')?iEl.src:null));
+    clues[w]=cEl?cEl.value.trim()||wEl.value.trim():wEl.value.trim();
+    const src=iEl&&(iEl.dataset.b||(iEl.src.startsWith('data:')?iEl.src:null));
     if(src) imgs[w]=src;
   });
-  if(words.length<2){ toast('Ajoutez au moins 2 mots !'); return; }
-  const o = document.getElementById('o-manual');
-  o.innerHTML = '<div class="loading">⌛ Génération…</div>';
+  if(words.length<2){toast('Ajoutez au moins 2 mots !');return;}
+  const o=document.getElementById('o-manual');
+  o.innerHTML='<div class="loading">⌛ Génération…</div>';
   setTimeout(()=>{
-    const r = build(words, size);
+    const r=build(words,size);
     o.innerHTML='';
-    renderSheet(r, title, clues, imgs, showSol, 'manual', bgData['m'], opVal);
-  }, 60);
+    renderSheet(r,title,clues,imgs,showSol,'manual',bgData['m'],opVal);
+  },60);
 }
 
 /* ══════════════════════════════════════════════
    MODE JEU
 ══════════════════════════════════════════════ */
 function doPlay(){
-  if(!G){ toast('Aucune grille.'); return; }
+  if(!G){toast('Aucune grille.');return;}
   renderPlay(G);
-  go('play', document.querySelectorAll('.tab')[2]);
+  go('play',document.querySelectorAll('.tab')[2]);
   window.scrollTo(0,0);
 }
 
 function renderPlay(data){
-  const {grid,placed,size,title,clues,imgs,bgSrc,opVal} = data;
-  const cp = cellPx(size);
-  const sp = [...placed].sort((a,b)=>a.row!==b.row?a.row-b.row:a.col-b.col);
-  const nums = numCells(grid, sp, size);
-  const across = sp.filter(p=>p.dir==='H').sort((a,b)=>a.num-b.num);
-  const down   = sp.filter(p=>p.dir==='V').sort((a,b)=>a.num-b.num);
+  const{grid,placed,size,title,clues,imgs,bgSrc,opVal}=data;
+  const cp=cellPx(size);
+  const sp=[...placed].sort((a,b)=>a.row!==b.row?a.row-b.row:a.col-b.col);
+  const nums=numCells(grid,sp,size);
+  const across=sp.filter(p=>p.dir==='H').sort((a,b)=>a.num-b.num);
+  const down=sp.filter(p=>p.dir==='V').sort((a,b)=>a.num-b.num);
 
-  let tbl = `<table class="xw">`;
+  let tbl=`<table class="xw">`;
   for(let r=0;r<size;r++){
-    tbl += `<tr>`;
+    tbl+=`<tr>`;
     for(let c=0;c<size;c++){
-      const ch = grid[r][c];
-      const sz = `width:${cp}px;height:${cp}px`;
-      if(!ch){ tbl+=`<td class="xb" style="${sz}"></td>`; }
-      else {
-        const num = nums[r+','+c]||'';
-        tbl += `<td class="xwc" style="${sz}" data-a="${ch}">
-          <span class="xn">${num}</span>
-          <input class="xi" maxlength="1" oninput="chk(this,'${ch}')">
-        </td>`;
+      const ch=grid[r][c];
+      const sz=`width:${cp}px;height:${cp}px`;
+      if(!ch){tbl+=`<td class="xb" style="${sz}"></td>`;}
+      else{
+        const num=nums[r+','+c]||'';
+        tbl+=`<td class="xwc" style="${sz}" data-a="${ch}"><span class="xn">${num}</span><input class="xi" maxlength="1" oninput="chk(this,'${ch}')"></td>`;
       }
     }
-    tbl += `</tr>`;
+    tbl+=`</tr>`;
   }
-  tbl += `</table>`;
+  tbl+=`</table>`;
 
   function mkC(list){
     return list.map(p=>{
-      const txt=clues[p.word]||p.word, img=imgs&&imgs[p.word];
+      const txt=clues[p.word]||p.word,img=imgs&&imgs[p.word];
       return `<div class="clue"><span class="cn">${p.num}.</span>${img?`<img class="cimg" src="${img}" alt="">`:''}
         <span class="cbody">${txt} <em style="color:#bbb;font-size:.62em">(${p.word.length})</em></span></div>`;
     }).join('');
   }
 
-  const bgStyle = bgSrc ? `background-image:url('${bgSrc}');opacity:${(opVal||8)/100}` : 'opacity:0';
-
-  document.getElementById('o-play').innerHTML = `
+  const bgStyle=bgSrc?`background-image:url('${bgSrc}');opacity:${(opVal||8)/100}`:`opacity:0`;
+  document.getElementById('o-play').innerHTML=`
   <div class="sheet">
     <div class="sheet-title-block" style="padding:0 0 14px">
       <div class="sheet-title">▶ ${title}</div>
@@ -700,55 +646,65 @@ function renderPlay(data){
   </div>`;
 }
 
-function chk(inp,a){ const v=inp.value.toUpperCase(); inp.value=v; inp.style.color=v===a?'#2e7d32':(v?'#c45c3a':''); }
+function chk(inp,a){const v=inp.value.toUpperCase();inp.value=v;inp.style.color=v===a?'#2e7d32':(v?'#c45c3a':'');}
 function chkAll(){
   let ok=0,tot=0;
-  document.querySelectorAll('#o-play .xi').forEach(i=>{ tot++; const a=i.closest('td').dataset.a; if(i.value.toUpperCase()===a){ok++;i.style.color='#2e7d32';}else if(i.value)i.style.color='#c45c3a'; });
+  document.querySelectorAll('#o-play .xi').forEach(i=>{tot++;const a=i.closest('td').dataset.a;if(i.value.toUpperCase()===a){ok++;i.style.color='#2e7d32';}else if(i.value)i.style.color='#c45c3a';});
   toast(`${ok}/${tot} lettres correctes !`);
 }
-function reveal(){ document.querySelectorAll('#o-play .xi').forEach(i=>{ i.value=i.closest('td').dataset.a; i.style.color='#2e7d32'; }); }
-function resetP(){ document.querySelectorAll('#o-play .xi').forEach(i=>{ i.value=''; i.style.color=''; }); }
+function reveal(){document.querySelectorAll('#o-play .xi').forEach(i=>{i.value=i.closest('td').dataset.a;i.style.color='#2e7d32';});}
+function resetP(){document.querySelectorAll('#o-play .xi').forEach(i=>{i.value='';i.style.color='';});}
 
 /* ══════════════════════════════════════════════
-   DÉCODAGE QR — chargement depuis GitHub Pages
-   Lit le paramètre ?play=... dans l'URL
+   DÉCODAGE AU CHARGEMENT (scan QR)
+   Lit ?g=<gistId> dans l'URL et charge le Gist
 ══════════════════════════════════════════════ */
-function decodeFromUrl(){
-  const params = new URLSearchParams(window.location.search);
-  const encoded = params.get('play');
-  if(!encoded) return;
+async function handleQRLoad(){
+  const params=new URLSearchParams(window.location.search);
+  const gistId=params.get('g');
+  if(!gistId) return;
 
   try {
-    const obj = JSON.parse(decodeURIComponent(escape(atob(encoded))));
-    const size = obj.s;
-    // Reconstruire la grille
-    const rows = obj.g.split('|');
-    const grid = rows.map(row => [...row].map(c=>c==='.'?null:c));
-    // Reconstruire les mots placés
-    const placed = obj.p.split(';').map(s=>{
-      const [word,r,c,d,num] = s.split(',');
-      return {word, row:+r, col:+c, dir:+d===0?'H':'V', num:+num};
+    // Charger le Gist (pas besoin de token pour lire un Gist public)
+    const res=await fetch(`https://api.github.com/gists/${gistId}`,{
+      headers:{'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
     });
-    // Reconstruire les indices
-    const clues = {};
-    obj.c.split('~').forEach(kv=>{ const i=kv.indexOf(':'); if(i>0) clues[kv.slice(0,i)]=kv.slice(i+1); });
+    if(!res.ok) throw new Error('Gist introuvable');
+    const data=await res.json();
+    const raw=data.files['grid.json'].content;
+    const obj=JSON.parse(raw);
 
-    G = {grid, placed, size, title:obj.t, clues, imgs:{}, bgSrc:null, opVal:8};
+    const size=obj.s;
+    const rows=obj.g.split('|');
+    const grid=rows.map(row=>[...row].map(c=>c===''?null:c));
+    const placed=obj.p.split(';').map(s=>{
+      const[word,r,c,d,num]=s.split(',');
+      return{word,row:+r,col:+c,dir:+d===0?'H':'V',num:+num};
+    });
+    const clues={};
+    obj.c.split('~').forEach(kv=>{const i=kv.indexOf(':');if(i>0)clues[kv.slice(0,i)]=kv.slice(i+1);});
+
+    G={grid,placed,size,title:obj.t,clues,imgs:{},bgSrc:null,opVal:8};
     renderPlay(G);
-    go('play', document.querySelectorAll('.tab')[2]);
+    go('play',document.querySelectorAll('.tab')[2]);
   } catch(e){
-    console.warn('Décodage QR échoué :', e);
+    console.error('Erreur chargement grille:',e);
+    document.getElementById('o-play').innerHTML=`<div style="padding:24px;color:#c45c3a;text-align:center">
+      <strong>Impossible de charger la grille.</strong><br>
+      <small>${e.message}</small>
+    </div>`;
+    go('play',document.querySelectorAll('.tab')[2]);
   }
 }
-decodeFromUrl();
+handleQRLoad();
 
 /* ══════════════════════════════════════════════
    IMPRESSION / TÉLÉCHARGEMENT
 ══════════════════════════════════════════════ */
 function printSheet(id){
-  const el = document.getElementById(id); if(!el) return;
-  const css = document.querySelector('style').textContent;
-  const w = window.open('','_blank');
+  const el=document.getElementById(id);if(!el)return;
+  const css=document.querySelector('style').textContent;
+  const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>body{margin:0;background:#f5f0e8}${css}
@@ -757,25 +713,22 @@ function printSheet(id){
     </head><body>${el.outerHTML}<script>window.onload=()=>window.print()<\/script></body></html>`);
   w.document.close();
 }
-function dlSheet(id, title){
-  const el = document.getElementById(id); if(!el) return;
-  const css = document.querySelector('style').textContent;
-  const h = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>${title}</title>
+function dlSheet(id,title){
+  const el=document.getElementById(id);if(!el)return;
+  const css=document.querySelector('style').textContent;
+  const h=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>${title}</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>body{margin:0;padding:20px;background:#f5f0e8}${css}</style>
     </head><body>${el.outerHTML}</body></html>`;
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([h],{type:'text/html'}));
-  a.download = (title||'grille').replace(/\s+/g,'-')+'.html';
-  a.click(); toast('Téléchargé ✓');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([h],{type:'text/html'}));
+  a.download=(title||'grille').replace(/\s+/g,'-')+'.html';
+  a.click();toast('Téléchargé ✓');
 }
-function esc(s){ return (s||'').replace(/'/g,"\\'"); }
+function esc(s){return(s||'').replace(/'/g,"\\'");}
 
-/* ══════════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════════ */
 let _t;
-function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(_t); _t=setTimeout(()=>t.style.display='none',3200); }
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(_t);_t=setTimeout(()=>t.style.display='none',3500);}
 </script>
 </body>
 </html>
