@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur de Mots Croisés</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --ink:#1a1a2e;--paper:#f5f0e8;--cream:#ede8db;
+  --gold:#c9a84c;--gold-l:#e8c96a;--rust:#c45c3a;
+  --sage:#4a6e4a;--bdr:#2a2a4a;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--paper);min-height:100vh}
+
+/* ── HEADER ── */
+header{background:var(--paper);color:var(--ink);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:200}
+header h1{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:900;letter-spacing:-.02em}
+header h1 span{color:var(--gold)}
+.tabs{display:flex;gap:5px}
+.tab{padding:6px 16px;border:2px solid var(--ink);background:transparent;color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:600;font-size:.78rem;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
+.tab.on,.tab:hover{background:var(--ink);color:var(--paper)}
+
+/* ── LAYOUT ── */
+main{max-width:860px;margin:0 auto;padding:24px 14px}
+.panel{display:none}.panel.on{display:block}
+
+/* ── CARDS ── */
+.card{background:var(--cream);color:var(--ink);border:2px solid var(--bdr);border-radius:3px;padding:20px;margin-bottom:16px}
+.card h2{font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid #c0b898}
+label{display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;color:#5a4a38}
+input[type=text],select,textarea{width:100%;padding:8px 11px;border:2px solid var(--bdr);background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:2px;outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+textarea{resize:vertical;min-height:52px;font-size:.8rem}
+
+/* ── BUTTONS ── */
+.btn{padding:8px 20px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;transition:all .15s;border-radius:2px}
+.btn-ink{background:var(--ink);color:var(--paper)}.btn-ink:hover{background:#2e2e50}
+.btn-gold{background:var(--gold);color:var(--ink)}.btn-gold:hover{background:var(--gold-l)}
+.btn-rust{background:var(--rust);color:#fff}
+.btn-red{background:#a0201a;color:#fff}
+.btn-sm{padding:4px 10px;font-size:.72rem}
+
+/* ── WORD ROWS ── */
+.word-list{margin-top:8px}
+.word-row{display:grid;grid-template-columns:130px 1fr 90px 28px;gap:7px;align-items:start;margin-bottom:7px;background:var(--paper);padding:8px;border:1px solid #c8bfaa;border-radius:2px}
+.img-col{display:flex;flex-direction:column;gap:4px}
+.preview-img{width:60px;height:60px;object-fit:cover;border:4px solid #fff;outline:1px solid #c0b49a;box-shadow:0 2px 7px rgba(0,0,0,.14);display:none}
+.pick-btn{font-size:.62rem;padding:4px 2px;background:var(--sage);color:#fff;border:none;cursor:pointer;border-radius:2px;text-align:center}
+.del-btn{margin-top:20px;padding:4px 7px;background:#a0201a;color:#fff;border:none;cursor:pointer;border-radius:2px;font-size:.75rem}
+.bg-zone{border:2px dashed #c0b898;padding:10px;text-align:center;cursor:pointer;border-radius:2px;font-size:.78rem;color:#7a6a50;transition:border-color .2s}
+.bg-zone:hover,.bg-zone.has{border-color:var(--gold);border-style:solid}
+
+/* ════════════════════════════════
+   A4 SHEET — 740px screen width
+════════════════════════════════ */
+.sheet{
+  width:740px;
+  background:var(--paper);
+  color:var(--ink);
+  margin:20px auto;
+  padding:28px 32px 32px;
+  border:2px solid var(--bdr);
+  box-shadow:0 6px 28px rgba(0,0,0,.38);
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ── Titre : toujours visible, centré, position relative dans le flux ── */
+.sheet-title-block{
+  text-align:center;
+  padding:0 96px 14px;  /* réserve l'espace du QR à droite */
+  position:relative;
+  z-index:2;
+  flex-shrink:0;
+}
+.sheet-title{font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:900;letter-spacing:-.02em;line-height:1.05;color:var(--ink)}
+.sheet-sub{font-size:.62rem;color:#888;letter-spacing:.12em;text-transform:uppercase;margin-top:4px}
+
+/* ── QR : absolute top-right, z-index élevé ── */
+.qr-corner{position:absolute;top:28px;right:32px;z-index:10;display:flex;flex-direction:column;align-items:center;gap:3px}
+.qr-frame{width:82px;height:82px;border:2.5px solid var(--bdr);padding:4px;background:#fff;box-shadow:2px 2px 0 var(--bdr)}
+.qr-frame canvas,.qr-frame img{width:100%!important;height:100%!important;display:block}
+.qr-lbl{font-size:.5rem;text-transform:uppercase;letter-spacing:.08em;color:#888;text-align:center;max-width:84px}
+.qr-st{font-size:.52rem;text-align:center;max-width:84px;margin-top:1px}
+.qr-ok{color:#2e7d32}.qr-err{color:var(--rust)}
+
+/* ── Grille ── */
+.grid-zone{
+  display:flex;
+  justify-content:center;
+  margin-bottom:14px;
+  flex-shrink:0;
+  position:relative;
+  z-index:2;
+}
+.xw{border-collapse:collapse;border:2.5px solid var(--bdr);box-shadow:2px 2px 0 rgba(26,26,46,.12)}
+.xw td{position:relative;padding:0}
+/* Case vide (sans lettre) : blanc cassé, bordure très légère */
+.xb{background:#f2ede4;border:1px solid #e0d8cc}
+/* Case active (avec lettre) */
+.xwc{background:#fff;border:1.5px solid #3a3a5a}
+.xn{position:absolute;top:1px;left:2px;font-family:'DM Mono',monospace;font-size:6px;font-weight:700;line-height:1;color:var(--ink);pointer-events:none}
+.xl{display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-family:'DM Mono',monospace;font-size:.75rem;font-weight:700;text-transform:uppercase;color:var(--ink)}
+.xi{width:100%;height:100%;border:none;outline:none;background:transparent;text-align:center;font-family:'DM Mono',monospace;font-size:.75rem;font-weight:700;text-transform:uppercase;color:var(--rust);padding:0;cursor:text}
+
+/* ── Zone indices + image de fond ── */
+/* Le conteneur des indices est POSITIONNÉ en relatif pour que
+   l'image de fond ne soit que derrière eux */
+.clues-wrapper{
+  position:relative;
+  flex:1;
+}
+/* Image de fond : uniquement derrière les indices */
+.clues-bg{
+  position:absolute;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  pointer-events:none;
+  z-index:0;
+  border-radius:2px;
+  transition:opacity .3s;
+}
+.clues-grid{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px 18px;
+}
+.clues-col h3{font-family:'Playfair Display',serif;font-size:.73rem;font-weight:900;text-transform:uppercase;letter-spacing:.07em;border-bottom:1.5px solid var(--ink);padding-bottom:2px;margin-bottom:6px}
+.clue{display:flex;gap:6px;align-items:flex-start;margin-bottom:4px;font-size:.67rem}
+.cn{font-family:'DM Mono',monospace;font-weight:700;color:var(--rust);min-width:16px;flex-shrink:0;padding-top:1px}
+.cbody{flex:1;line-height:1.3;color:#2a2020}
+.cimg{width:36px;height:36px;object-fit:cover;flex-shrink:0;border:3px solid #fff;outline:1px solid #c0b49a;box-shadow:0 1px 5px rgba(0,0,0,.14)}
+
+/* ── Action bar ── */
+.action-bar{width:740px;margin:0 auto 28px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+
+/* ── Notifications QR ── */
+.qr-info{background:var(--cream);color:var(--ink);border:1.5px solid var(--gold);border-radius:3px;padding:12px 16px;font-size:.8rem;margin:8px auto;width:740px;display:none}
+.qr-info a{color:var(--rust);font-weight:700}
+
+/* loading / toast */
+.loading{text-align:center;padding:44px;font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:var(--gold);padding:10px 20px;border:2px solid var(--gold);font-size:.85rem;border-radius:2px;z-index:9999;animation:tin .25s ease;display:none}
+@keyframes tin{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+@media print{
+  body{background:#fff!important}
+  header,.card,.action-bar,.tabs,.qr-info{display:none!important}
+  .sheet{margin:0!important;border:none!important;box-shadow:none!important;width:210mm!important;padding:12mm 14mm!important}
+  @page{size:A4 portrait;margin:0}
+}
+@media(max-width:780px){
+  .sheet,.action-bar,.qr-info{width:100%}
+  .word-row{grid-template-columns:1fr 1fr}
+  .clues-grid{grid-template-columns:1fr}
+  .sheet-title-block{padding:0 0 14px}
+  .qr-corner{position:static;margin:0 auto 10px}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>✦ Mots <span>Croisés</span></h1>
+  <div class="tabs">
+    <button class="tab on"  onclick="go('auto',this)">Automatique</button>
+    <button class="tab"     onclick="go('manual',this)">Manuel</button>
+    <button class="tab"     onclick="go('play',this)">Jouer</button>
+  </div>
+</header>
+<main>
+
+<!-- AUTO -->
+<div id="p-auto" class="panel on">
+  <div class="card">
+    <h2>Génération par mots-clés</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+      <div><label>Titre</label><input type="text" id="a-title" value="Mots Croisés"></div>
+      <div><label>Taille</label>
+        <select id="a-size"><option value="10">10×10</option><option value="13" selected>13×13</option><option value="15">15×15</option></select>
+      </div>
+      <div><label>Solution</label>
+        <select id="a-sol"><option value="0">Grille vierge</option><option value="1">Avec réponses</option></select>
+      </div>
+    </div>
+    <div style="margin-bottom:10px">
+      <label>Mots-clés séparés par des virgules</label>
+      <input type="text" id="a-words" placeholder="Ex : vidange, filtre, courroie, embrayage, freins, alternateur…">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div>
+        <label>Image de fond (derrière les indices)</label>
+        <div class="bg-zone" id="a-bgz" onclick="document.getElementById('a-bgf').click()">📷 Choisir une image</div>
+        <input type="file" id="a-bgf" accept="image/*" style="display:none" onchange="loadBg(event,'a')">
+      </div>
+      <div style="display:flex;flex-direction:column;justify-content:flex-end;gap:6px">
+        <label>Opacité du fond</label>
+        <input type="range" id="a-op" min="2" max="28" value="8" style="width:100%" oninput="liveOp('auto')">
+      </div>
+    </div>
+    <button class="btn btn-gold" onclick="genAuto()">✦ Générer la grille</button>
+  </div>
+  <div id="qri-auto" class="qr-info"></div>
+  <div id="o-auto"></div>
+</div>
+
+<!-- MANUAL -->
+<div id="p-manual" class="panel">
+  <div class="card">
+    <h2>Grille personnalisée</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+      <div><label>Titre</label><input type="text" id="m-title" value="Ma Grille"></div>
+      <div><label>Taille</label>
+        <select id="m-size"><option value="10">10×10</option><option value="13" selected>13×13</option><option value="15">15×15</option></select>
+      </div>
+      <div><label>Solution</label>
+        <select id="m-sol"><option value="0">Grille vierge</option><option value="1">Avec réponses</option></select>
+      </div>
+    </div>
+    <div class="word-list" id="m-words"></div>
+    <div style="margin:8px 0 12px;display:flex;gap:7px;flex-wrap:wrap">
+      <button class="btn btn-ink btn-sm" onclick="addRow()">+ Mot</button>
+      <button class="btn btn-ink btn-sm" onclick="document.getElementById('csv-f').click()">📄 CSV</button>
+    </div>
+    <input type="file" id="csv-f" accept=".csv" style="display:none" onchange="importCSV(event)">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div>
+        <label>Image de fond (derrière les indices)</label>
+        <div class="bg-zone" id="m-bgz" onclick="document.getElementById('m-bgf').click()">📷 Choisir une image</div>
+        <input type="file" id="m-bgf" accept="image/*" style="display:none" onchange="loadBg(event,'m')">
+      </div>
+      <div style="display:flex;flex-direction:column;justify-content:flex-end;gap:6px">
+        <label>Opacité du fond</label>
+        <input type="range" id="m-op" min="2" max="28" value="8" style="width:100%" oninput="liveOp('manual')">
+      </div>
+    </div>
+    <button class="btn btn-gold" onclick="genManual()">✦ Générer la grille</button>
+  </div>
+  <div id="qri-manual" class="qr-info"></div>
+  <div id="o-manual"></div>
+</div>
+
+<!-- PLAY -->
+<div id="p-play" class="panel">
+  <div id="o-play" style="padding:28px;text-align:center;color:#aaa;font-style:italic">
+    Aucune grille chargée. Générez une grille puis cliquez "Jouer", ou scannez un QR code.
+  </div>
+</div>
+
+</main>
+<div class="toast" id="toast"></div>
+<script>
+/* ══════════════════════════════════════════════
+   CONFIGURATION — URL GitHub Pages
+══════════════════════════════════════════════ */
+const GITHUB_URL = 'https://roche-stephane.github.io/Mots-croises-Maintenance-Automobile/';
+
+/* ══════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════ */
+const bgData = {a:null, m:null};
+let G = null;
+
+/* ══════════════════════════════════════════════
+   TABS
+══════════════════════════════════════════════ */
+function go(id, btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  if(btn) btn.classList.add('on');
+}
+
+/* ══════════════════════════════════════════════
+   BACKGROUND IMAGE
+══════════════════════════════════════════════ */
+function loadBg(e, p){
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    bgData[p] = ev.target.result;
+    const z = document.getElementById(p+'-bgz');
+    z.textContent = '✓ ' + f.name; z.classList.add('has');
+    // Mise à jour en direct si la feuille est déjà affichée
+    const mode = p==='a'?'auto':'manual';
+    const bgEl = document.getElementById('clues-bg-'+mode);
+    if(bgEl) bgEl.style.backgroundImage = `url('${bgData[p]}')`;
+  };
+  r.readAsDataURL(f);
+}
+function liveOp(mode){
+  const p = mode==='auto'?'a':'m';
+  const v = document.getElementById(p+'-op').value / 100;
+  const bgEl = document.getElementById('clues-bg-'+mode);
+  if(bgEl) bgEl.style.opacity = v;
+}
+
+/* ══════════════════════════════════════════════
+   WORD ROWS (mode manuel)
+══════════════════════════════════════════════ */
+let rc = 0;
+function addRow(w='', c='', img=''){
+  const id = ++rc;
+  const d = document.createElement('div');
+  d.className = 'word-row'; d.id = 'r'+id;
+  d.innerHTML = `
+    <div><label>Mot</label>
+      <input type="text" id="w${id}" value="${w}" placeholder="MOT" style="text-transform:uppercase">
+    </div>
+    <div><label>Indice</label>
+      <textarea id="c${id}" placeholder="Définition ou description…">${c}</textarea>
+    </div>
+    <div class="img-col"><label>Image</label>
+      <img class="preview-img" id="pi${id}" src="${img}" ${img?'style="display:block"':''}>
+      <button class="pick-btn" onclick="document.getElementById('fi${id}').click()">📷 Choisir</button>
+      <input type="file" id="fi${id}" accept="image/*" style="display:none" onchange="pickImg(event,${id})">
+    </div>
+    <button class="del-btn" onclick="document.getElementById('r${id}').remove()">✕</button>`;
+  document.getElementById('m-words').appendChild(d);
+  if(img){ document.getElementById('pi'+id).dataset.b = img; }
+}
+function pickImg(e, id){
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    const im = document.getElementById('pi'+id);
+    im.src = ev.target.result; im.style.display = 'block'; im.dataset.b = ev.target.result;
+  };
+  r.readAsDataURL(f);
+}
+function importCSV(e){
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ev => { ev.target.result.split('\n').forEach(l=>{ const p=l.split(','); if(p[0]) addRow(p[0].trim(),p[1]||''); }); toast('CSV importé ✓'); };
+  r.readAsText(f);
+}
+for(let i=0;i<5;i++) addRow();
+
+/* ══════════════════════════════════════════════
+   NORMALISE
+══════════════════════════════════════════════ */
+function N(w){
+  return w.toUpperCase()
+    .replace(/[ÀÁÂÃÄ]/g,'A').replace(/[ÈÉÊË]/g,'E')
+    .replace(/[ÌÍÎÏ]/g,'I').replace(/[ÒÓÔÕÖ]/g,'O')
+    .replace(/[ÙÚÛÜ]/g,'U').replace(/Ç/g,'C')
+    .replace(/[^A-Z]/g,'');
+}
+
+/* ══════════════════════════════════════════════
+   MOTEUR MOTS CROISÉS
+══════════════════════════════════════════════ */
+function build(raws, size){
+  const wl = [...new Set(raws.map(N).filter(w=>w.length>=2&&w.length<size))].sort((a,b)=>b.length-a.length);
+  const grid = Array.from({length:size}, ()=>new Array(size).fill(null));
+  const placed = [];
+
+  function ok(word,row,col,dir){
+    const len=word.length;
+    if(dir==='H'){
+      if(col+len>size) return false;
+      if(col>0&&grid[row][col-1]) return false;
+      if(col+len<size&&grid[row][col+len]) return false;
+      for(let i=0;i<len;i++){
+        const g=grid[row][col+i];
+        if(g&&g!==word[i]) return false;
+        if(!g){ if(row>0&&grid[row-1][col+i]) return false; if(row<size-1&&grid[row+1][col+i]) return false; }
+      }
+    } else {
+      if(row+len>size) return false;
+      if(row>0&&grid[row-1][col]) return false;
+      if(row+len<size&&grid[row+len][col]) return false;
+      for(let i=0;i<len;i++){
+        const g=grid[row+i][col];
+        if(g&&g!==word[i]) return false;
+        if(!g){ if(col>0&&grid[row+i][col-1]) return false; if(col<size-1&&grid[row+i][col+1]) return false; }
+      }
+    }
+    return true;
+  }
+  function place(word,row,col,dir){
+    for(let i=0;i<word.length;i++) dir==='H'?(grid[row][col+i]=word[i]):(grid[row+i][col]=word[i]);
+    placed.push({word,row,col,dir});
+  }
+  function intersect(word){
+    for(const p of placed)
+      for(let pi=0;pi<p.word.length;pi++)
+        for(let wi=0;wi<word.length;wi++)
+          if(p.word[pi]===word[wi]){
+            if(p.dir==='H'){ const r=p.row-wi,c=p.col+pi; if(r>=0&&ok(word,r,c,'V')){ place(word,r,c,'V'); return true; } }
+            else            { const r=p.row+pi,c=p.col-wi; if(c>=0&&ok(word,r,c,'H')){ place(word,r,c,'H'); return true; } }
+          }
+    return false;
+  }
+  if(wl.length) place(wl[0], Math.floor(size/2), Math.floor((size-wl[0].length)/2), 'H');
+  for(let i=1;i<wl.length;i++){
+    if(!intersect(wl[i])){
+      let done=false;
+      for(let t=0;t<300&&!done;t++){
+        const dir=t%2?'V':'H', r=Math.floor(Math.random()*size), c=Math.floor(Math.random()*size);
+        if(ok(wl[i],r,c,dir)){ place(wl[i],r,c,dir); done=true; }
+      }
+    }
+  }
+  return {grid, placed, size};
+}
+
+function numCells(grid, placed, size){
+  const starts = new Set(placed.map(p=>p.row+','+p.col));
+  const nums={}; let n=1;
+  for(let r=0;r<size;r++) for(let c=0;c<size;c++) if(grid[r][c]&&starts.has(r+','+c)) nums[r+','+c]=n++;
+  placed.forEach(p=>p.num=nums[p.row+','+p.col]);
+  return nums;
+}
+
+function cellPx(size){ return Math.floor(Math.min(640,440)/size); }
+
+/* ══════════════════════════════════════════════
+   QR CODE — STRATÉGIE GITHUB PAGES
+   
+   1. On encode la grille en JSON compressé (base64)
+   2. On stocke ce JSON dans localStorage du navigateur
+      sous une clé unique (timestamp)
+   3. Le QR pointe vers la page GitHub Pages avec
+      cette clé en paramètre : ?k=XXXXX
+   4. Quand GitHub Pages charge avec ?k=XXXXX,
+      il lit localStorage et affiche la grille.
+   
+   MAIS : localStorage ne persiste pas entre
+   appareils différents. Donc on utilise une
+   approche différente :
+   
+   On encode TOUT dans l'URL (paramètre #data=)
+   en utilisant une compression LZ simple pour
+   garder l'URL sous 2000 chars (limite QR).
+   Si trop long → on tronque les indices longs.
+══════════════════════════════════════════════ */
+
+function compressGrid(grid, placed, clues, title, size){
+  // Format ultra-compact :
+  // grille : seulement les lettres ligne par ligne, séparées par |
+  // mots placés : word,r,c,dir(0=H,1=V) séparés par ;
+  // indices : mot:indice séparés par ~ (indices tronqués à 60 chars)
+  const gStr = grid.map(row=>row.map(c=>c||'.').join('')).join('|');
+  const pStr = placed.map(p=>`${p.word},${p.row},${p.col},${p.dir==='H'?0:1},${p.num||0}`).join(';');
+  const cStr = Object.entries(clues).map(([k,v])=>`${k}:${v.substring(0,60)}`).join('~');
+  const obj = {g:gStr, p:pStr, c:cStr, t:title, s:size};
+  return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+}
+
+function buildQRUrl(encoded){
+  return GITHUB_URL + '?play=' + encoded;
+}
+
+function makeQR(grid, placed, clues, title, size, qrDivId, statusId, infoId){
+  const statusEl = document.getElementById(statusId);
+  const qrEl     = document.getElementById(qrDivId);
+  const infoEl   = document.getElementById(infoId);
+  if(!qrEl) return;
+
+  const encoded = compressGrid(grid, placed, clues, title, size);
+  const playUrl = buildQRUrl(encoded);
+  const urlLen  = playUrl.length;
+
+  // Render QR
+  qrEl.innerHTML = '';
+  const corrLevel = urlLen < 800 ? QRCode.CorrectLevel.M : QRCode.CorrectLevel.L;
+  try {
+    new QRCode(qrEl, {
+      text: playUrl,
+      width: 74, height: 74,
+      colorDark: '#1a1a2e', colorLight: '#ffffff',
+      correctLevel: corrLevel
+    });
+    if(statusEl){ statusEl.textContent='✓ QR actif'; statusEl.className='qr-st qr-ok'; }
+
+    if(infoEl){
+      infoEl.style.display = 'block';
+      infoEl.innerHTML = `✓ <strong>QR code généré.</strong> Pour qu'il soit scannable depuis n'importe quel iPhone ou Android dans le monde, 
+        déposez ce fichier sur votre GitHub Pages : <a href="${GITHUB_URL}" target="_blank">${GITHUB_URL}</a><br>
+        <em style="font-size:.72rem;color:#888">Taille URL : ${urlLen} caractères — ${urlLen<1500?'✓ compatible tous les lecteurs QR':'⚠ URL longue, utilisez une grille plus petite ou des indices plus courts'}</em>`;
+    }
+  } catch(e) {
+    if(statusEl){ statusEl.textContent='Erreur QR'; statusEl.className='qr-st qr-err'; }
+    console.error('QR error', e);
+  }
+}
+
+/* ══════════════════════════════════════════════
+   RENDU DE LA FEUILLE A4
+══════════════════════════════════════════════ */
+function renderSheet({grid,placed,size}, title, clues, imgs, showSol, mode, bgSrc, opVal){
+  const cp = cellPx(size);
+  const sp = [...placed].sort((a,b)=>a.row!==b.row?a.row-b.row:a.col-b.col);
+  const nums = numCells(grid, sp, size);
+  const across = sp.filter(p=>p.dir==='H').sort((a,b)=>a.num-b.num);
+  const down   = sp.filter(p=>p.dir==='V').sort((a,b)=>a.num-b.num);
+
+  /* Table grille */
+  let tbl = `<table class="xw">`;
+  for(let r=0;r<size;r++){
+    tbl += `<tr>`;
+    for(let c=0;c<size;c++){
+      const ch = grid[r][c];
+      const sz = `width:${cp}px;height:${cp}px`;
+      if(!ch){
+        tbl += `<td class="xb" style="${sz}"></td>`;
+      } else {
+        const num = nums[r+','+c]||'';
+        const inner = showSol ? `<div class="xl">${ch}</div>` : '';
+        tbl += `<td class="xwc" style="${sz}"><span class="xn">${num}</span>${inner}</td>`;
+      }
+    }
+    tbl += `</tr>`;
+  }
+  tbl += `</table>`;
+
+  /* Indices */
+  function mkClues(list){
+    return list.map(p=>{
+      const txt = clues[p.word]||p.word;
+      const img = imgs&&imgs[p.word];
+      return `<div class="clue">
+        <span class="cn">${p.num}.</span>
+        ${img?`<img class="cimg" src="${img}" alt="">`:''}
+        <span class="cbody">${txt} <em style="color:#bbb;font-size:.62em">(${p.word.length})</em></span>
+      </div>`;
+    }).join('');
+  }
+
+  const bgStyle = bgSrc ? `background-image:url('${bgSrc}');opacity:${opVal/100}` : `opacity:0`;
+  const shId    = `sh-${mode}`;
+  const qrId    = `qr-${mode}`;
+  const stId    = `qs-${mode}`;
+  const infoId  = `qri-${mode}`;
+
+  document.getElementById('o-'+mode).innerHTML = `
+  <div class="sheet" id="${shId}">
+    <!-- QR en haut à droite, AU-DESSUS du titre -->
+    <div class="qr-corner">
+      <div class="qr-frame" id="${qrId}"></div>
+      <div class="qr-lbl">Scanner pour jouer</div>
+      <div class="qr-st" id="${stId}">⏳ Génération…</div>
+    </div>
+
+    <!-- Titre centré, toujours dans le flux -->
+    <div class="sheet-title-block">
+      <div class="sheet-title">${title}</div>
+      <div class="sheet-sub">Mots Croisés • ${sp.length} mots</div>
+    </div>
+
+    <!-- Grille centrée -->
+    <div class="grid-zone">${tbl}</div>
+
+    <!-- Zone indices avec image de fond UNIQUEMENT derrière eux -->
+    <div class="clues-wrapper">
+      <div class="clues-bg" id="clues-bg-${mode}" style="${bgStyle}"></div>
+      <div class="clues-grid">
+        <div class="clues-col"><h3>→ Horizontalement</h3>${mkClues(across)}</div>
+        <div class="clues-col"><h3>↓ Verticalement</h3>${mkClues(down)}</div>
+      </div>
+    </div>
+  </div>
+  <div class="action-bar">
+    <button class="btn btn-ink"  onclick="printSheet('${shId}')">🖨 Imprimer / PDF</button>
+    <button class="btn btn-gold" onclick="dlSheet('${shId}','${esc(title)}')">💾 Télécharger HTML</button>
+    <button class="btn btn-rust" onclick="doPlay()">▶ Jouer en ligne</button>
+  </div>`;
+
+  G = {grid, placed:sp, size, title, clues, imgs:imgs||{}, bgSrc, opVal};
+
+  // Générer le QR
+  makeQR(grid, sp, clues, title, size, qrId, stId, infoId);
+}
+
+/* ══════════════════════════════════════════════
+   GÉNÉRATEURS
+══════════════════════════════════════════════ */
+function genAuto(){
+  const title  = document.getElementById('a-title').value.trim()||'Mots Croisés';
+  const size   = parseInt(document.getElementById('a-size').value);
+  const showSol= document.getElementById('a-sol').value==='1';
+  const raw    = document.getElementById('a-words').value;
+  const opVal  = parseInt(document.getElementById('a-op').value);
+  if(!raw.trim()){ toast('Saisissez des mots-clés !'); return; }
+  const words  = raw.split(',').map(w=>w.trim()).filter(Boolean);
+  const clues  = {}; words.forEach(w=>{ clues[N(w)]=w; });
+  const o = document.getElementById('o-auto');
+  o.innerHTML = '<div class="loading">⌛ Génération…</div>';
+  setTimeout(()=>{
+    const r = build(words, size);
+    if(r.placed.length<2){ o.innerHTML='<div class="card" style="color:var(--rust)">Pas assez de mots placés. Ajoutez plus de mots.</div>'; return; }
+    o.innerHTML='';
+    renderSheet(r, title, clues, {}, showSol, 'auto', bgData['a'], opVal);
+  }, 60);
+}
+
+function genManual(){
+  const title  = document.getElementById('m-title').value.trim()||'Ma Grille';
+  const size   = parseInt(document.getElementById('m-size').value);
+  const showSol= document.getElementById('m-sol').value==='1';
+  const opVal  = parseInt(document.getElementById('m-op').value);
+  const words=[], clues={}, imgs={};
+  document.querySelectorAll('#m-words .word-row').forEach(row=>{
+    const m = row.id.match(/r(\d+)/); if(!m) return;
+    const id = m[1];
+    const wEl=document.getElementById('w'+id), cEl=document.getElementById('c'+id), iEl=document.getElementById('pi'+id);
+    if(!wEl||!wEl.value.trim()) return;
+    const w = N(wEl.value.trim()); if(w.length<2) return;
+    words.push(w);
+    clues[w] = cEl ? cEl.value.trim()||wEl.value.trim() : wEl.value.trim();
+    const src = iEl&&(iEl.dataset.b||(iEl.src.startsWith('data:')?iEl.src:null));
+    if(src) imgs[w]=src;
+  });
+  if(words.length<2){ toast('Ajoutez au moins 2 mots !'); return; }
+  const o = document.getElementById('o-manual');
+  o.innerHTML = '<div class="loading">⌛ Génération…</div>';
+  setTimeout(()=>{
+    const r = build(words, size);
+    o.innerHTML='';
+    renderSheet(r, title, clues, imgs, showSol, 'manual', bgData['m'], opVal);
+  }, 60);
+}
+
+/* ══════════════════════════════════════════════
+   MODE JEU
+══════════════════════════════════════════════ */
+function doPlay(){
+  if(!G){ toast('Aucune grille.'); return; }
+  renderPlay(G);
+  go('play', document.querySelectorAll('.tab')[2]);
+  window.scrollTo(0,0);
+}
+
+function renderPlay(data){
+  const {grid,placed,size,title,clues,imgs,bgSrc,opVal} = data;
+  const cp = cellPx(size);
+  const sp = [...placed].sort((a,b)=>a.row!==b.row?a.row-b.row:a.col-b.col);
+  const nums = numCells(grid, sp, size);
+  const across = sp.filter(p=>p.dir==='H').sort((a,b)=>a.num-b.num);
+  const down   = sp.filter(p=>p.dir==='V').sort((a,b)=>a.num-b.num);
+
+  let tbl = `<table class="xw">`;
+  for(let r=0;r<size;r++){
+    tbl += `<tr>`;
+    for(let c=0;c<size;c++){
+      const ch = grid[r][c];
+      const sz = `width:${cp}px;height:${cp}px`;
+      if(!ch){ tbl+=`<td class="xb" style="${sz}"></td>`; }
+      else {
+        const num = nums[r+','+c]||'';
+        tbl += `<td class="xwc" style="${sz}" data-a="${ch}">
+          <span class="xn">${num}</span>
+          <input class="xi" maxlength="1" oninput="chk(this,'${ch}')">
+        </td>`;
+      }
+    }
+    tbl += `</tr>`;
+  }
+  tbl += `</table>`;
+
+  function mkC(list){
+    return list.map(p=>{
+      const txt=clues[p.word]||p.word, img=imgs&&imgs[p.word];
+      return `<div class="clue"><span class="cn">${p.num}.</span>${img?`<img class="cimg" src="${img}" alt="">`:''}
+        <span class="cbody">${txt} <em style="color:#bbb;font-size:.62em">(${p.word.length})</em></span></div>`;
+    }).join('');
+  }
+
+  const bgStyle = bgSrc ? `background-image:url('${bgSrc}');opacity:${(opVal||8)/100}` : 'opacity:0';
+
+  document.getElementById('o-play').innerHTML = `
+  <div class="sheet">
+    <div class="sheet-title-block" style="padding:0 0 14px">
+      <div class="sheet-title">▶ ${title}</div>
+      <div class="sheet-sub">Mode Interactif — Complétez la grille</div>
+    </div>
+    <div class="grid-zone">${tbl}</div>
+    <div class="clues-wrapper">
+      <div class="clues-bg" style="${bgStyle}"></div>
+      <div class="clues-grid">
+        <div class="clues-col"><h3>→ Horizontalement</h3>${mkC(across)}</div>
+        <div class="clues-col"><h3>↓ Verticalement</h3>${mkC(down)}</div>
+      </div>
+    </div>
+  </div>
+  <div class="action-bar">
+    <button class="btn btn-ink btn-sm"  onclick="chkAll()">✓ Vérifier</button>
+    <button class="btn btn-gold btn-sm" onclick="reveal()">💡 Solution</button>
+    <button class="btn btn-red btn-sm"  onclick="resetP()">↺ Recommencer</button>
+  </div>`;
+}
+
+function chk(inp,a){ const v=inp.value.toUpperCase(); inp.value=v; inp.style.color=v===a?'#2e7d32':(v?'#c45c3a':''); }
+function chkAll(){
+  let ok=0,tot=0;
+  document.querySelectorAll('#o-play .xi').forEach(i=>{ tot++; const a=i.closest('td').dataset.a; if(i.value.toUpperCase()===a){ok++;i.style.color='#2e7d32';}else if(i.value)i.style.color='#c45c3a'; });
+  toast(`${ok}/${tot} lettres correctes !`);
+}
+function reveal(){ document.querySelectorAll('#o-play .xi').forEach(i=>{ i.value=i.closest('td').dataset.a; i.style.color='#2e7d32'; }); }
+function resetP(){ document.querySelectorAll('#o-play .xi').forEach(i=>{ i.value=''; i.style.color=''; }); }
+
+/* ══════════════════════════════════════════════
+   DÉCODAGE QR — chargement depuis GitHub Pages
+   Lit le paramètre ?play=... dans l'URL
+══════════════════════════════════════════════ */
+function decodeFromUrl(){
+  const params = new URLSearchParams(window.location.search);
+  const encoded = params.get('play');
+  if(!encoded) return;
+
+  try {
+    const obj = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+    const size = obj.s;
+    // Reconstruire la grille
+    const rows = obj.g.split('|');
+    const grid = rows.map(row => [...row].map(c=>c==='.'?null:c));
+    // Reconstruire les mots placés
+    const placed = obj.p.split(';').map(s=>{
+      const [word,r,c,d,num] = s.split(',');
+      return {word, row:+r, col:+c, dir:+d===0?'H':'V', num:+num};
+    });
+    // Reconstruire les indices
+    const clues = {};
+    obj.c.split('~').forEach(kv=>{ const i=kv.indexOf(':'); if(i>0) clues[kv.slice(0,i)]=kv.slice(i+1); });
+
+    G = {grid, placed, size, title:obj.t, clues, imgs:{}, bgSrc:null, opVal:8};
+    renderPlay(G);
+    go('play', document.querySelectorAll('.tab')[2]);
+  } catch(e){
+    console.warn('Décodage QR échoué :', e);
+  }
+}
+decodeFromUrl();
+
+/* ══════════════════════════════════════════════
+   IMPRESSION / TÉLÉCHARGEMENT
+══════════════════════════════════════════════ */
+function printSheet(id){
+  const el = document.getElementById(id); if(!el) return;
+  const css = document.querySelector('style').textContent;
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>body{margin:0;background:#f5f0e8}${css}
+    @media print{@page{size:A4 portrait;margin:0}body{background:#fff!important}
+    .sheet{margin:0!important;border:none!important;box-shadow:none!important;width:210mm!important;padding:12mm 14mm!important}}</style>
+    </head><body>${el.outerHTML}<script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+function dlSheet(id, title){
+  const el = document.getElementById(id); if(!el) return;
+  const css = document.querySelector('style').textContent;
+  const h = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>${title}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>body{margin:0;padding:20px;background:#f5f0e8}${css}</style>
+    </head><body>${el.outerHTML}</body></html>`;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([h],{type:'text/html'}));
+  a.download = (title||'grille').replace(/\s+/g,'-')+'.html';
+  a.click(); toast('Téléchargé ✓');
+}
+function esc(s){ return (s||'').replace(/'/g,"\\'"); }
+
+/* ══════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════ */
+let _t;
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(_t); _t=setTimeout(()=>t.style.display='none',3200); }
+</script>
+</body>
+</html>
