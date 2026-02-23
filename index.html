@@ -19,23 +19,25 @@ header{background:var(--paper);color:var(--ink);padding:12px 16px;display:flex;a
 header h1{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:900;letter-spacing:-.02em;line-height:1.2;text-align:center}
 header h1 span{color:var(--gold)}
 
-/* QR superposé dans la zone grille */
-.qr-overlay{position:absolute;top:14px;right:14px;z-index:10;display:flex;flex-direction:column;align-items:center;gap:3px}
-.qr-frame{width:72px;height:72px;border:2.5px solid var(--bdr);padding:4px;background:#fff;display:block;box-shadow:1px 1px 0 rgba(0,0,0,.15)}
-.qr-frame img{width:100%;height:100%;display:block;max-width:none}
-.qr-overlay a{display:block;line-height:0}
-.qr-lbl{font-size:.42rem;text-transform:uppercase;letter-spacing:.07em;color:#666;text-align:center}
-
 main{padding:10px}
 
-.sheet{background:var(--paper);color:var(--ink);border:2px solid var(--bdr);border-radius:3px;max-width:600px;margin:0 auto;overflow:hidden}
+.sheet{background:var(--paper);color:var(--ink);border:2px solid var(--bdr);border-radius:3px;max-width:600px;margin:0 auto;overflow:hidden;display:flex;flex-direction:column;min-height:calc(100vh - 80px)}
 
-.sh-title-block{text-align:center;padding:12px 12px 8px;border-bottom:1px solid #c0b898}
+/* BLOC TITRE + QR alignés */
+.sh-title-block{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:1px solid #c0b898;gap:10px}
+.sh-title-text{flex:1;text-align:center}
 .sh-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;letter-spacing:-.02em;color:var(--ink)}
 .sh-sub{font-size:.58rem;color:#888;letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
 
+/* QR dans le bloc titre */
+.qr-inline{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0}
+.qr-frame{width:72px;height:72px;border:2.5px solid var(--bdr);padding:4px;background:#fff;display:block;box-shadow:1px 1px 0 rgba(0,0,0,.15)}
+.qr-frame img{width:100%;height:100%;display:block;max-width:none}
+.qr-inline a{display:block;line-height:0}
+.qr-lbl{font-size:.42rem;text-transform:uppercase;letter-spacing:.07em;color:#666;text-align:center}
+
 /* GRILLE */
-.grid-wrap{padding:14px;display:flex;justify-content:center;position:relative}
+.grid-wrap{padding:14px;display:flex;justify-content:center}
 .xw{border-collapse:collapse;border:2.5px solid var(--bdr)}
 .xw td{position:relative;padding:0}
 .xb{background:#e8e2d8;border:1px solid #d0c8ba}
@@ -78,8 +80,8 @@ main{padding:10px}
 
 
 
-/* INDICES */
-.clues-section{padding:14px;position:relative;overflow:hidden}
+/* INDICES — occupe tout l'espace restant pour que le fond aille jusqu'en bas */
+.clues-section{padding:14px;position:relative;overflow:hidden;flex:1;display:flex;flex-direction:column}
 .clues-bg{position:absolute;inset:0;background-size:cover;background-position:center;pointer-events:none;opacity:.25;z-index:0}
 .clues-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;position:relative;z-index:1}
 @media(max-width:400px){.clues-grid{grid-template-columns:1fr}}
@@ -114,12 +116,26 @@ main{padding:10px}
   body{background:#fff!important;margin:0;padding:0}
   header,.act-bar,.toast,#cell-input,.modal-overlay{display:none!important}
   main{padding:0!important}
-  .sheet{border:none!important;box-shadow:none!important;max-width:none!important;margin:0!important}
-  .xwc.hi-word,.xwc.hi-cell{background:#fff!important;border-color:#3a3a5a!important;border-width:1.5px!important}
-  .xwc.correct{background:#e8f5e9!important}
-  .xlj.ok{color:#2e7d32!important}
-  .clues-bg{opacity:.18!important}
-  @page{size:A4 portrait;margin:10mm}
+  .sheet{border:none!important;box-shadow:none!important;max-width:none!important;margin:0!important;min-height:100vh;border-radius:0!important}
+  /* Partie haute (titre + grille) : noir et blanc */
+  .sh-title-block{filter:grayscale(1);border-bottom:1px solid #999!important}
+  .sh-title{color:#000!important}
+  .sh-sub{color:#555!important}
+  .qr-frame{border-color:#000!important;box-shadow:none!important}
+  .qr-lbl{color:#555!important}
+  .grid-wrap{filter:grayscale(1)}
+  .xb{background:#ddd!important;border-color:#bbb!important}
+  .xwc{background:#fff!important;border-color:#333!important}
+  .xwc.hi-word,.xwc.hi-cell{background:#fff!important;border-color:#333!important;border-width:1.5px!important}
+  .xwc.correct{background:#eee!important}
+  .xn{color:#000!important}
+  .xlj{color:#000!important}
+  .xlj.ok{color:#000!important}
+  /* Partie basse (indices) : couleurs conservées, fond jusqu'en bas */
+  .clues-section{flex:1;min-height:0}
+  .clues-bg{opacity:.2!important}
+  .act-bar{display:none!important}
+  @page{size:A4 portrait;margin:8mm}
 }
 </style>
 </head>
@@ -144,18 +160,19 @@ main{padding:10px}
 <div class="sheet" id="sheet">
 
   <div class="sh-title-block">
-    <div class="sh-title">Le système d'injection d'essence</div>
-    <div class="sh-sub">Mots Croisés • 4 mots</div>
-  </div>
-
-  <div class="grid-wrap">
-    <!-- QR code en haut à droite de la grille -->
-    <div class="qr-overlay">
+    <div class="sh-title-text">
+      <div class="sh-title">Le système d'injection d'essence</div>
+      <div class="sh-sub">Mots Croisés • 4 mots</div>
+    </div>
+    <div class="qr-inline">
       <a href="https://roche-stephane.github.io/Mots-croises-Maintenance-Automobile/?g=cfc63f0ae919cb75123bc168e46012cf" target="_blank">
         <div class="qr-frame"><img src="data:image/png;base64,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" alt="QR code"></div>
       </a>
       <div class="qr-lbl">Scanner pour jouer</div>
     </div>
+  </div>
+
+  <div class="grid-wrap">
     <table class="xw" id="grid">
       <tbody id="grid-body"></tbody>
     </table>
