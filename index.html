@@ -97,7 +97,7 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
 /* Grille */
 .sh-grid{display:flex;justify-content:center;margin-bottom:14px;flex-shrink:0;position:relative;z-index:2;overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .xw{border-collapse:collapse;border:2.5px solid var(--bdr);box-shadow:2px 2px 0 rgba(26,26,46,.12)}
-.xw td{position:relative;padding:0}
+.xw td{position:relative;padding:0;aspect-ratio:1/1}
 /* Case vide — blanc cassé, pas de noir */
 .xb{background:#f2ede4;border:1px solid #e0d8cc}
 /* Case avec lettre */
@@ -120,6 +120,7 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
   flex:1;              /* occupe tout l'espace restant */
   display:flex;
   flex-direction:column;
+  min-height:200px;    /* garantit un fond visible même peu d'indices */
 }
 /* Image de fond UNIQUEMENT derrière les indices */
 .sh-clues-bg{
@@ -150,7 +151,25 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
 /* Barre d'actions */
 .act-bar{width:740px;margin:0 auto 28px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 
-.loading{text-align:center;padding:44px;font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold);animation:pulse 1.2s ease-in-out infinite}
+/* Input mobile invisible positionné sur la case active */
+#mobile-inp{
+  position:fixed;
+  opacity:0;
+  width:40px;
+  height:40px;
+  top:-9999px;
+  left:-9999px;
+  border:none;
+  background:transparent;
+  color:transparent;
+  caret-color:transparent;
+  font-size:16px; /* évite le zoom iOS */
+  z-index:9000;
+  pointer-events:none;
+  outline:none;
+  -webkit-user-select:auto;
+  user-select:auto;
+}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:var(--gold);padding:10px 20px;border:2px solid var(--gold);font-size:.85rem;border-radius:2px;z-index:9999;animation:tin .25s ease;display:none}
 @keyframes tin{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
@@ -187,17 +206,17 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
     break-inside:avoid;
     display:block!important;
   }
-  /* Titre sans padding droit excessif (le QR est absolu) */
-  .sh-title-block{padding:0 90px 10px 0!important}
+  /* Titre avec espace réservé pour le QR en haut à droite */
+  .sh-title-block{padding:0 100px 10px 0!important;text-align:center!important}
   .sh-title{font-size:1.4rem!important}
-  /* Grille : taille de case réduite pour tenir en largeur */
+  /* Grille centrée, cases réduites pour tenir en largeur */
   .sh-grid{
     overflow:visible!important;
-    justify-content:flex-start!important;
+    justify-content:center!important;
     margin-bottom:8px!important;
   }
-  /* Réduire les cases à l'impression : 26px fixe */
-  .xw td{width:26px!important;height:26px!important}
+  /* Cases : conserver les dimensions calculées par cpx(), forcer le carré */
+  .xw td{aspect-ratio:1/1!important}
   .xn{font-size:5px!important}
   .xl{font-size:.6rem!important}
   /* Indices compacts */
@@ -208,6 +227,7 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
   .sh-clues-bg{opacity:.15!important}
 }
 @media(max-width:780px){
+  header{display:none!important}
   .sheet,.act-bar{width:100%}
   .word-row{grid-template-columns:1fr 1fr}
   .sh-clues-grid{grid-template-columns:1fr}
@@ -218,6 +238,7 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
 </style>
 </head>
 <body>
+<input id="mobile-inp" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" maxlength="2">
 <header>
   <h1>✦ Mots <span>Croisés</span></h1>
   <div class="tabs">
@@ -237,15 +258,8 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
       (cochez uniquement <strong>gist</strong>). Mémorisé dans votre navigateur.
       <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="saveTok(this.value)">
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
       <div><label>Titre</label><input type="text" id="m-title" value="Ma Grille"></div>
-      <div><label>Taille</label>
-        <select id="m-size">
-          <option value="10">10 × 10</option>
-          <option value="13" selected>13 × 13</option>
-          <option value="15">15 × 15</option>
-        </select>
-      </div>
       <div><label>Solution</label>
         <select id="m-sol">
           <option value="0">Grille vierge</option>
@@ -517,8 +531,19 @@ function numberCells(placed, size){
   return nums;
 }
 
-/* Taille de case fixe — la grille scrolle plutôt que de s'étirer */
-function cpx(size){ return 34; }
+/* Taille de case adaptative — toujours carrée, s'adapte à l'écran et au nombre de cases */
+function cpx(size){
+  /* Espace disponible : min entre largeur viewport et 680px (max sheet screen) */
+  const availW = Math.min(window.innerWidth - 28, 680);
+  /* Calculer la taille max qui tient en largeur, plafonnée à 40px, plancher 18px */
+  return Math.max(18, Math.min(40, Math.floor(availW / size)));
+}
+
+/* Pour l'impression A4 : largeur utile ≈ 175mm à 96dpi ≈ 662px */
+function cpxPrint(size){
+  const availW = 662; /* largeur utile A4 avec marges 10mm */
+  return Math.max(16, Math.min(36, Math.floor(availW / size)));
+}
 
 /* ═══════════════════════════════════
    RENDU HTML DE LA FEUILLE
@@ -528,7 +553,7 @@ function cpx(size){ return 34; }
 ═══════════════════════════════════ */
 function renderSheet(data, print){
   const {grid,placed,size,title,clues,imgs,bg,op,showSol} = data;
-  const cp = cpx(size);
+  const cp = print ? cpxPrint(size) : cpx(size);
   const sp = [...placed].sort((a,b)=>a.row!==b.row?a.row-b.row:a.col-b.col);
   numberCells(sp, size);
   const across = sp.filter(p=>p.dir==='H').sort((a,b)=>a.num-b.num);
@@ -613,7 +638,6 @@ function renderSheet(data, print){
 ═══════════════════════════════════ */
 async function generate(){
   const title   = document.getElementById('m-title').value.trim()||'Ma Grille';
-  const size    = parseInt(document.getElementById('m-size').value);
   const showSol = document.getElementById('m-sol').value==='1';
   const op      = parseInt(document.getElementById('m-op').value);
   const words=[], clues={}, imgsRaw={};
@@ -648,7 +672,10 @@ async function generate(){
   const bgGist = BG ? await compressImg(BG, 320, 0.45) : null;
 
   setTimeout(()=>{
-    const res = buildGrid(words, size);
+    /* Taille auto : mot le plus long + marge, minimum 10, maximum 20 */
+    const longestWord = words.reduce((max, w) => Math.max(max, w.length), 0);
+    const autoSize = Math.min(20, Math.max(10, longestWord + Math.ceil(words.length * 0.8)));
+    const res = buildGrid(words, autoSize);
     if(res.placed.length<2){
       o.innerHTML='<div class="card" style="color:var(--rust)">Trop peu de mots placés. Ajoutez-en davantage.</div>';
       return;
@@ -762,6 +789,8 @@ function startPlay(data){
 
   document.removeEventListener('keydown', onKey);
   document.addEventListener('keydown', onKey);
+  setupMobileInput();
+  window.addEventListener('scroll', ()=>{ if(sel) repositionMobileInput(); }, {passive:true});
 }
 
 /* ═══════════════════════════════════
@@ -782,6 +811,7 @@ function cellClick(td){
     else if(vOk&&!hOk) dir='V';
   }
   hilite();
+  focusMobileInput();
 }
 
 function hilite(){
@@ -840,7 +870,7 @@ function onKey(e){
 function moveSel(r,c){
   if(r<0||r>=GRID.size||c<0||c>=GRID.size) return;
   if(!GRID.grid[r]?.[c]) return;
-  sel={r,c}; hilite();
+  sel={r,c}; hilite(); focusMobileInput();
 }
 
 function advance(){
@@ -868,6 +898,79 @@ function advance(){
 function drawCell(r,c,letter,cls=''){
   const el=document.getElementById(`xlj-${r}-${c}`); if(!el) return;
   el.textContent=letter; el.className='xlj'+(cls?' '+cls:'');
+}
+
+/* ═══════════════════════════════════
+   CLAVIER NATIF MOBILE
+   Un <input> invisible est positionné
+   exactement sur la case active et
+   reçoit le focus pour déclencher
+   le clavier natif iOS/Android.
+═══════════════════════════════════ */
+let _mobileInpReady = false;
+
+function setupMobileInput(){
+  const inp = document.getElementById('mobile-inp');
+  if(!inp || _mobileInpReady) return;
+  _mobileInpReady = true;
+
+  inp.addEventListener('input', ()=>{
+    const raw = inp.value.replace(/[^A-Za-zÀ-ÿ]/g,'').toUpperCase();
+    inp.value = '';
+    if(!sel || !raw) return;
+    const letter = raw.slice(-1); // prendre le dernier caractère saisi
+    const {r,c} = sel;
+    ans[r+','+c] = letter;
+    const correct = letter === (GRID.grid[r]?.[c]||'');
+    drawCell(r, c, letter, correct?'ok':'ko');
+    advance();
+    repositionMobileInput();
+  });
+
+  inp.addEventListener('keydown', e=>{
+    if((e.key==='Backspace'||e.key==='Delete') && inp.value===''){
+      e.preventDefault();
+      if(!sel) return;
+      const {r,c} = sel;
+      const key = r+','+c;
+      if(ans[key]){ delete ans[key]; drawCell(r,c,''); }
+      else {
+        const pr=dir==='H'?r:r-1, pc=dir==='H'?c-1:c;
+        if(pr>=0&&pc>=0&&GRID.grid[pr]?.[pc]){
+          sel={r:pr,c:pc}; delete ans[pr+','+pc]; drawCell(pr,pc,''); hilite();
+        }
+      }
+      repositionMobileInput();
+    }
+  });
+
+  inp.addEventListener('blur', ()=>{
+    // Remettre en focus si une case est sélectionnée (évite la perte de clavier)
+    if(sel) setTimeout(()=>{ try{ inp.focus({preventScroll:true}); }catch(e){} }, 80);
+  });
+}
+
+function repositionMobileInput(){
+  const inp = document.getElementById('mobile-inp');
+  if(!inp || !sel) return;
+  const td = document.querySelector(`#sh-play td[data-r="${sel.r}"][data-c="${sel.c}"]`);
+  if(!td){ inp.style.top='-9999px'; inp.style.left='-9999px'; return; }
+  const rect = td.getBoundingClientRect();
+  inp.style.pointerEvents = 'auto';
+  inp.style.position = 'fixed';
+  inp.style.left = rect.left + 'px';
+  inp.style.top  = rect.top  + 'px';
+  inp.style.width = rect.width + 'px';
+  inp.style.height = rect.height + 'px';
+  inp.style.opacity = '0';
+  inp.value = '';
+}
+
+function focusMobileInput(){
+  const inp = document.getElementById('mobile-inp');
+  if(!inp) return;
+  repositionMobileInput();
+  setTimeout(()=>{ try{ inp.focus({preventScroll:true}); }catch(e){} }, 30);
 }
 
 function checkAll(){
