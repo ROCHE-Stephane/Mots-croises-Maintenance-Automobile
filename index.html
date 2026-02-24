@@ -62,7 +62,6 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
 ════════════════════════ */
 .sheet{
   width:740px;
-  min-height:1046px;
   background:var(--paper);
   color:var(--ink);
   margin:20px auto;
@@ -87,24 +86,16 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
 .sh-sub{font-size:.62rem;color:#888;letter-spacing:.12em;text-transform:uppercase;margin-top:4px}
 
 /* QR coin haut droit */
-/* QR sticky dans le panneau jeu */
-.play-wrap{display:flex;align-items:flex-start;gap:10px;justify-content:center}
-.play-qr-col{flex-shrink:0;position:sticky;top:80px;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:4px}
-.play-qr-frame{width:80px;height:80px;border:2.5px solid var(--bdr);padding:4px;background:#fff;box-shadow:2px 2px 0 rgba(0,0,0,.15)}
-.play-qr-frame canvas,.play-qr-frame img{width:100%!important;height:100%!important;display:block}
-.play-qr-lbl{font-size:.45rem;text-transform:uppercase;letter-spacing:.07em;color:var(--paper);text-align:center;max-width:80px}
-.btn-edit-loop{display:flex;align-items:center;gap:6px;margin:16px auto 0;padding:10px 24px;background:var(--gold);color:var(--ink);border:none;border-radius:2px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:all .15s}
-.btn-edit-loop:hover{background:var(--gold-l)}
-
-.sh-qr{position:absolute;top:28px;right:32px;z-index:10;display:flex;flex-direction:column;align-items:center;gap:3px}
+/* QR uniquement à l'impression — invisible sur tous les écrans */
+.sh-qr{display:none}
 .sh-qr-frame{width:82px;height:82px;border:2.5px solid var(--bdr);padding:4px;background:#fff;box-shadow:2px 2px 0 var(--bdr)}
 .sh-qr-frame canvas,.sh-qr-frame img{width:100%!important;height:100%!important;display:block}
-.sh-qr-lbl{font-size:.5rem;text-transform:uppercase;letter-spacing:.08em;color:#888;text-align:center;max-width:84px}
+.sh-qr-lbl{font-size:.5rem;text-transform:uppercase;letter-spacing:.08em;color:#444;text-align:center;max-width:84px}
 .sh-qr-st{font-size:.52rem;text-align:center;max-width:84px;margin-top:1px}
 .qr-ok{color:#2e7d32}.qr-err{color:var(--rust)}.qr-wait{color:#888}
 
 /* Grille */
-.sh-grid{display:flex;justify-content:center;margin-bottom:14px;flex-shrink:0;position:relative;z-index:2}
+.sh-grid{display:flex;justify-content:center;margin-bottom:14px;flex-shrink:0;position:relative;z-index:2;overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .xw{border-collapse:collapse;border:2.5px solid var(--bdr);box-shadow:2px 2px 0 rgba(26,26,46,.12)}
 .xw td{position:relative;padding:0}
 /* Case vide — blanc cassé, pas de noir */
@@ -165,18 +156,64 @@ textarea{resize:vertical;min-height:52px;font-size:.8rem}
 @keyframes tin{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
 
 @media print{
-  body{background:#fff!important}
-  header,.card,.act-bar,.tabs,.play-qr-col,.btn-edit-loop{display:none!important}
-  .play-wrap{display:block}
-  .sheet{margin:0!important;border:none!important;box-shadow:none!important;width:210mm!important;min-height:297mm!important;padding:12mm 14mm!important}
-  @page{size:A4 portrait;margin:0}
+  @page{size:A4 portrait;margin:10mm 10mm 10mm 10mm}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  html,body{background:#fff!important;margin:0;padding:0;height:auto}
+  header,.card,.act-bar,.tabs,.play-wrap>div:first-child{display:none!important}
+  main{padding:0!important;max-width:none!important}
+  /* Afficher le QR uniquement à l'impression */
+  .sh-qr{
+    display:flex!important;
+    position:absolute;
+    top:0;right:0;
+    z-index:10;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+  }
+  /* Feuille : tenir sur une page, hauteur auto */
+  .sheet{
+    width:100%!important;
+    min-height:0!important;
+    height:auto!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:10mm 12mm 8mm!important;
+    border:none!important;
+    box-shadow:none!important;
+    border-radius:0!important;
+    overflow:visible!important;
+    page-break-inside:avoid;
+    break-inside:avoid;
+    display:block!important;
+  }
+  /* Titre sans padding droit excessif (le QR est absolu) */
+  .sh-title-block{padding:0 90px 10px 0!important}
+  .sh-title{font-size:1.4rem!important}
+  /* Grille : taille de case réduite pour tenir en largeur */
+  .sh-grid{
+    overflow:visible!important;
+    justify-content:flex-start!important;
+    margin-bottom:8px!important;
+  }
+  /* Réduire les cases à l'impression : 26px fixe */
+  .xw td{width:26px!important;height:26px!important}
+  .xn{font-size:5px!important}
+  .xl{font-size:.6rem!important}
+  /* Indices compacts */
+  .sh-clues-wrap{page-break-inside:avoid;break-inside:avoid}
+  .sh-clues-grid{grid-template-columns:1fr 1fr!important}
+  .clue{margin-bottom:4px!important;font-size:.6rem!important}
+  .cimg{width:28px!important;height:28px!important}
+  .sh-clues-bg{opacity:.15!important}
 }
 @media(max-width:780px){
   .sheet,.act-bar{width:100%}
   .word-row{grid-template-columns:1fr 1fr}
   .sh-clues-grid{grid-template-columns:1fr}
   .sh-title-block{padding:0 0 14px}
-  .sh-qr{position:static;margin:0 auto 10px}
+  .sh-qr{display:none!important}
+  .sh-grid{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 }
 </style>
 </head>
@@ -444,6 +481,29 @@ function buildGrid(raws, size){
       }
     }
   }
+
+  /* ── Rognage automatique : on supprime les lignes/colonnes vides en bordure ── */
+  if(placed.length > 0){
+    let minR=size,maxR=0,minC=size,maxC=0;
+    for(const p of placed){
+      minR=Math.min(minR,p.row);
+      maxR=Math.max(maxR,p.dir==='V'?p.row+p.word.length-1:p.row);
+      minC=Math.min(minC,p.col);
+      maxC=Math.max(maxC,p.dir==='H'?p.col+p.word.length-1:p.col);
+    }
+    /* Ajouter 1 case de marge de chaque côté */
+    minR=Math.max(0,minR-1); minC=Math.max(0,minC-1);
+    maxR=Math.min(size-1,maxR+1); maxC=Math.min(size-1,maxC+1);
+    const newSize=Math.max(maxR-minR+1,maxC-minC+1);
+    /* Décaler les mots */
+    placed.forEach(p=>{ p.row-=minR; p.col-=minC; });
+    /* Reconstruire la grille rognée */
+    const ng=Array.from({length:newSize},()=>new Array(newSize).fill(null));
+    for(const p of placed)
+      for(let i=0;i<p.word.length;i++)
+        p.dir==='H'?(ng[p.row][p.col+i]=p.word[i]):(ng[p.row+i][p.col]=p.word[i]);
+    return {grid:ng, placed, size:newSize};
+  }
   return {grid, placed, size};
 }
 
@@ -457,7 +517,8 @@ function numberCells(placed, size){
   return nums;
 }
 
-function cpx(size){ return Math.floor(Math.min(640,440)/size); }
+/* Taille de case fixe — la grille scrolle plutôt que de s'étirer */
+function cpx(size){ return 34; }
 
 /* ═══════════════════════════════════
    RENDU HTML DE LA FEUILLE
@@ -594,8 +655,8 @@ async function generate(){
     }
     const sp = [...res.placed].sort((a,b)=>a.row!==b.row?a.row-b.row:a.col-b.col);
 
-    /* Données grille complètes */
-    GRID = {grid:res.grid, placed:sp, size, title, clues, imgs, bg:BG, op, showSol};
+    /* Données grille complètes — utilise res.size (taille rognée automatiquement) */
+    GRID = {grid:res.grid, placed:sp, size:res.size, title, clues, imgs, bg:BG, op, showSol};
 
     /* Afficher la feuille impression */
     const shHtml = renderSheet(GRID, true);
@@ -611,7 +672,7 @@ async function generate(){
       g: res.grid.map(row=>row.map(c=>c||'').join('')).join('|'),
       p: sp.map(p=>`${p.word},${p.row},${p.col},${p.dir==='H'?0:1}`).join(';'),
       c: Object.entries(clues).map(([k,v])=>`${k}:${v.substring(0,120)}`).join('~'),
-      t: title, s: size, op,
+      t: title, s: res.size, op,
     };
     publishAndQR(meta, imgsGist, bgGist);
   }, 60);
@@ -665,10 +726,6 @@ async function publishAndQR(meta, imgs, bgData){
     new QRCode(qrEl,{ text:playUrl, width:74, height:74, colorDark:'#1a1a2e', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M });
     if(stEl){ stEl.textContent='✓ QR prêt'; stEl.className='sh-qr-st qr-ok'; }
     toast('✓ QR actif — scannable depuis n\'importe quel iPhone !');
-
-    // Mettre à jour le QR de la colonne latérale si en mode jeu
-    const lqEl = document.getElementById('play-qr-el');
-    if(lqEl){ lqEl.innerHTML=''; new QRCode(lqEl,{text:playUrl,width:72,height:72,colorDark:'#1a1a2e',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); }
   }catch(err){
     if(stEl){ stEl.textContent='⚠ Erreur : '+err.message; stEl.className='sh-qr-st qr-err'; }
     console.error('Gist error:',err);
@@ -685,57 +742,23 @@ function doPlay(){
   window.scrollTo(0,0);
 }
 
-function backToEdit(){
-  go('edit', document.querySelectorAll('.tab')[0]);
-  window.scrollTo(0,0);
-}
-
 function startPlay(data){
   sel=null; dir='H'; ans={};
   // Mémoriser la data pour pouvoir revenir à l'édition
   window._lastPlayData = data;
   const shHtml = renderSheet(data, false);
 
-  // Extraire le QR code (URL de jeu) si disponible
-  const playQR = data.playUrl || '';
-  const qrColHtml = `<div class="play-qr-col" id="play-qr-col">
-    <div class="play-qr-frame" id="play-qr-el"></div>
-    <div class="play-qr-lbl">Scanner pour jouer</div>
-  </div>`;
-
   document.getElementById('o-play').innerHTML = `
   <div class="play-wrap">
-    ${qrColHtml}
-    <div style="flex:1;min-width:0">
+    <div style="flex:1;min-width:0;overflow-x:auto">
       ${shHtml}
       <div class="act-bar">
         <button class="btn btn-ink btn-sm"  onclick="checkAll()">✓ Vérifier</button>
         <button class="btn btn-gold btn-sm" onclick="solveAll()">💡 Solution</button>
         <button class="btn btn-red btn-sm"  onclick="resetPlay()">↺ Recommencer</button>
       </div>
-      <div style="text-align:center;padding-bottom:20px">
-        <button class="btn-edit-loop" onclick="backToEdit()">✎ Modifier la grille</button>
-      </div>
     </div>
   </div>`;
-
-  // Générer le QR dans la colonne latérale
-  setTimeout(()=>{
-    const qrEl = document.getElementById('play-qr-el');
-    if(qrEl && playQR){
-      qrEl.innerHTML='';
-      new QRCode(qrEl,{text:playQR,width:72,height:72,colorDark:'#1a1a2e',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
-    } else if(qrEl){
-      qrEl.style.background='#eee';
-      qrEl.style.display='flex';
-      qrEl.style.alignItems='center';
-      qrEl.style.justifyContent='center';
-      qrEl.style.fontSize='.5rem';
-      qrEl.style.color='#888';
-      qrEl.style.textAlign='center';
-      qrEl.innerHTML='QR disponible<br>après publication';
-    }
-  }, 100);
 
   document.removeEventListener('keydown', onKey);
   document.addEventListener('keydown', onKey);
@@ -940,9 +963,7 @@ function doPrint(){
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@500;700&display=swap" rel="stylesheet">
-    <style>body{margin:0;background:#f5f0e8}${css}
-    @media print{@page{size:A4 portrait;margin:0}body{background:#fff!important}
-    .sheet{margin:0!important;border:none!important;box-shadow:none!important;width:210mm!important;min-height:297mm!important;padding:12mm 14mm!important}}</style>
+    <style>body{margin:0;background:#f5f0e8}${css}</style>
     </head><body>${el.outerHTML}<script>window.onload=()=>window.print()<\/script></body></html>`);
   w.document.close();
 }
